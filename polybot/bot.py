@@ -6,6 +6,7 @@ from datetime import datetime
 from telebot.types import InputFile
 import polybot_helper_lib
 import boto3
+import json
 
 
 class Bot:
@@ -20,7 +21,15 @@ class Bot:
         time.sleep(0.5)
 
         # set the webhook URL
-        self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
+
+        self.telegram_bot_client.set_webhook(
+            url=f'{telegram_chat_url}/{token}/', timeout=60, certificate=open("YOURPUBLIC.pem", 'r')
+        )
+        # self.telegram_bot_client.set_webhook(
+        #     url=f'{telegram_chat_url}/{token}/',
+        #     timeout=60,
+        #     certificate=polybot_helper_lib.get_secret("cert_public_key")
+        # )
 
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
@@ -74,6 +83,11 @@ class ObjectDetectionBot(Bot):
         self.media_group = None
         self.filter = None
 
+        self.queue_name = 'dms-aws-project-queue'
+        self.sqs_client = boto3.client('sqs', region_name='eu-central-1')
+        self.s3 = boto3.client('s3')
+
+
         self.previous_pic = None
         self.images_bucket = images_bucket
 
@@ -108,23 +122,73 @@ class ObjectDetectionBot(Bot):
         if self.is_current_msg_photo(msg):
             photo_path = self.download_user_photo(msg)
 
-            # TODO upload the photo to S3
+            # Upload the photo to S3
+            message_received = False
+            if msg.get("caption") == "Predict":
+                self.filter = msg.get("caption")
+
+                logger.info("\nFilter set to Predict\n")
 
             if self.filter == "Predict":
                 images_dir = "photos/predicted_images"
-
                 photo_path = self.download_user_photo(msg)
+
+                logger.info("\nDownload image\n")
+
                 photo_path = self.add_date_to_filename(photo_path)
-                s3 = boto3.client('s3')
-                polybot_helper_lib.upload_file(photo_path, self.images_bucket, s3)
+
+                logger.info("\nadded path\n")
+
+                polybot_helper_lib.upload_file(photo_path, self.images_bucket, self.s3)
+
+                logger.info("\nUploaded file to s3\n")
+
+                s3_img_name = os.path.split(photo_path)
+                for i in range(5):
+                    try:
+                        logger.info(f"File name: {s3_img_name[1]}")
+                        self.s3.head_object(
+                            Bucket=self.images_bucket,
+                            Key=s3_img_name[1]
+                        )
+                        message_received = True
+                        break
+                    except Exception as E:
+                        logger.info(f"file probably not there yet :/ attempt no: {i}")
+                        time.sleep(5)
+
+                # Send a job to the SQS queue
+                message_dict = {
+                    "img_name": s3_img_name[1],
+                    "msg_id": msg['chat']['id']
+                }
+
+                json_string = json.dumps(message_dict, indent=4)
+                response = self.sqs_client.send_message(QueueUrl=self.queue_name, MessageBody=json_string)
+                self.send_text(msg['chat']['id'], text="Your image is being processed. Please wait...")
 
             else:
+                # TODO add informative error message
                 self.send_text(
                     msg['chat']['id'],
                     f"An error occurred. \
-                    You have to provide a picture and one of the following filters: {self.filters_list}"
+                    You have to provide a picture and one of the following filters:"
                 )
                 self.filter = None
 
-            # TODO send a job to the SQS queue
+            if not message_received:
+                self.send_text(
+                    msg['chat']['id'],
+                    f"An error occurred. \
+                    You have to provide a picture and one of the following filters:"
+                )
+                self.filter = None
+
             # TODO send message to the Telegram end-user (e.g. Your image is being processed. Please wait...)
+        else:
+            self.send_text(
+                msg['chat']['id'],
+                f"An error occurred. \
+                You have to provide a picture and one of the following filters:"
+            )
+            self.filter = None
