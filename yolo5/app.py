@@ -5,11 +5,18 @@ import yaml
 from loguru import logger
 import os
 import boto3
+import json
+import polybot_helper_lib
+import requests
 
 images_bucket = os.environ['BUCKET_NAME']
 queue_name = os.environ['SQS_QUEUE_NAME']
+dynamo_name = os.environ['DYNAMO_NAME']
+polybot_domain = os.environ["TELEGRAM_APP_URL"]
 
-sqs_client = boto3.client('sqs', region_name='YOUR_REGION_HERE')
+sqs_client = boto3.client('sqs', region_name='eu-central-1')
+s3_client = boto3.client('s3')
+dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
 
 with open("data/coco128.yaml", "r") as stream:
     names = yaml.safe_load(stream)['names']
@@ -20,7 +27,7 @@ def consume():
         response = sqs_client.receive_message(QueueUrl=queue_name, MaxNumberOfMessages=1, WaitTimeSeconds=5)
 
         if 'Messages' in response:
-            message = response['Messages'][0]['Body']
+            message = json.loads(response['Messages'][0]['Body'])
             receipt_handle = response['Messages'][0]['ReceiptHandle']
 
             # Use the ReceiptHandle as a prediction UUID
@@ -28,10 +35,15 @@ def consume():
 
             logger.info(f'prediction: {prediction_id}. start processing')
 
+            # create a directory to store the images
+            images_dir = "images"
+            if not os.path.exists(images_dir):
+                os.makedirs(images_dir)
+
             # Receives a URL parameter representing the image to download from S3
-            img_name = ...  # TODO extract from `message`
-            chat_id = ...  # TODO extract from `message`
-            original_img_path = ...  # TODO download img_name from S3, store the local image path in original_img_path
+            img_name = message.get("img_name")
+            chat_id = message.get("msg_id")
+            original_img_path = s3_client.download_file(images_bucket, img_name, f'{images_dir}/{img_name}')
 
             logger.info(f'prediction: {prediction_id}/{original_img_path}. Download img completed')
 
@@ -48,10 +60,13 @@ def consume():
             logger.info(f'prediction: {prediction_id}/{original_img_path}. done')
 
             # This is the path for the predicted image with labels
-            # The predicted image typically includes bounding boxes drawn around the detected objects, along with class labels and possibly confidence scores.
+            # The predicted image typically includes bounding boxes drawn around the detected objects,
+            # along with class labels and possibly confidence scores.
+
             predicted_img_path = Path(f'static/data/{prediction_id}/{original_img_path}')
 
-            # TODO Uploads the predicted image (predicted_img_path) to S3 (be careful not to override the original image).
+            # Uploads the predicted image (predicted_img_path) to S3 (be careful not to override the original image).
+            polybot_helper_lib.upload_file(predicted_img_path, s3_client, f"predicted_img/{img_name}")
 
             # Parse prediction labels and create a summary
             pred_summary_path = Path(f'static/data/{prediction_id}/labels/{original_img_path.split(".")[0]}.txt')
@@ -77,8 +92,14 @@ def consume():
                     'time': time.time()
                 }
 
-                # TODO store the prediction_summary in a DynamoDB table
-                # TODO perform a GET request to Polybot to `/results` endpoint
+                # store the prediction_summary in a DynamoDB table
+                prediction_record = dynamo_client.put_item(
+                    TableName=dynamo_name,
+                    Item=polybot_helper_lib.dict_to_dynamo_format(prediction_summary)
+                )
+
+                # perform a GET request to Polybot to `/results` endpoint
+                result = requests.post(f"{polybot_domain}/results?predictionId={prediction_id}")
 
             # Delete the message from the queue as the job is considered as DONE
             sqs_client.delete_message(QueueUrl=queue_name, ReceiptHandle=receipt_handle)

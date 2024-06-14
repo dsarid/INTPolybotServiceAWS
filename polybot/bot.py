@@ -83,15 +83,15 @@ class ObjectDetectionBot(Bot):
         self.media_group = None
         self.filter = None
 
-        self.queue_name = 'dms-aws-project-queue'
+        self.queue_name = os.environ["SQS_QUEUE_NAME"]
         self.sqs_client = boto3.client('sqs', region_name='eu-central-1')
         self.s3 = boto3.client('s3')
-
 
         self.previous_pic = None
         self.images_bucket = images_bucket
 
-    def add_date_to_filename(self, file_path):
+    @staticmethod
+    def _add_date_to_filename_(file_path):
         # Split the file path into directory and filename
         directory, filename = os.path.split(file_path)
 
@@ -135,7 +135,7 @@ class ObjectDetectionBot(Bot):
 
                 logger.info("\nDownload image\n")
 
-                photo_path = self.add_date_to_filename(photo_path)
+                photo_path = self._add_date_to_filename_(photo_path)
 
                 logger.info("\nadded path\n")
 
@@ -163,6 +163,7 @@ class ObjectDetectionBot(Bot):
                     "msg_id": msg['chat']['id']
                 }
 
+                # send message to the Telegram end-user (e.g. Your image is being processed. Please wait...)
                 json_string = json.dumps(message_dict, indent=4)
                 response = self.sqs_client.send_message(QueueUrl=self.queue_name, MessageBody=json_string)
                 self.send_text(msg['chat']['id'], text="Your image is being processed. Please wait...")
@@ -184,7 +185,6 @@ class ObjectDetectionBot(Bot):
                 )
                 self.filter = None
 
-            # TODO send message to the Telegram end-user (e.g. Your image is being processed. Please wait...)
         else:
             self.send_text(
                 msg['chat']['id'],

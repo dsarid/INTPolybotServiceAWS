@@ -7,15 +7,7 @@ from botocore.exceptions import ClientError
 import polybot_helper_lib
 import json
 
-
-# Use this code snippet in your app.
-# If you need more information about configurations
-# or implementing the sample code, visit the AWS docs:
-# https://aws.amazon.com/developer/language/python/
-
-
-    # Your code goes here.
-
+dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
 
 app = flask.Flask(__name__)
 
