@@ -9,10 +9,10 @@ import json
 import polybot_helper_lib
 import requests
 
-images_bucket = os.environ['BUCKET_NAME']
-queue_name = os.environ['SQS_QUEUE_NAME']
-dynamo_name = os.environ['DYNAMO_NAME']
-polybot_domain = os.environ["TELEGRAM_APP_URL"]
+S3_IMAGE_BUCKET = os.environ['BUCKET_NAME']
+QUEUE_NAME = os.environ['SQS_QUEUE_NAME']
+DYNAMO_NAME = os.environ['DYNAMO_NAME']
+ELB_URL = os.environ["TELEGRAM_APP_URL"]
 
 sqs_client = boto3.client('sqs', region_name='eu-central-1')
 s3_client = boto3.client('s3')
@@ -24,7 +24,7 @@ with open("data/coco128.yaml", "r") as stream:
 
 def consume():
     while True:
-        response = sqs_client.receive_message(QueueUrl=queue_name, MaxNumberOfMessages=1, WaitTimeSeconds=5)
+        response = sqs_client.receive_message(QueueUrl=QUEUE_NAME, MaxNumberOfMessages=1, WaitTimeSeconds=5)
 
         if 'Messages' in response:
             message = json.loads(response['Messages'][0]['Body'])
@@ -43,7 +43,7 @@ def consume():
             # Receives a URL parameter representing the image to download from S3
             img_name = message.get("img_name")
             chat_id = message.get("msg_id")
-            original_img_path = s3_client.download_file(images_bucket, img_name, f'{images_dir}/{img_name}')
+            original_img_path = s3_client.download_file(S3_IMAGE_BUCKET, img_name, f'{images_dir}/{img_name}')
 
             logger.info(f'prediction: {prediction_id}/{original_img_path}. Download img completed')
 
@@ -86,6 +86,7 @@ def consume():
 
                 prediction_summary = {
                     'prediction_id': prediction_id,
+                    'chat_id': chat_id,
                     'original_img_path': original_img_path,
                     'predicted_img_path': predicted_img_path,
                     'labels': labels,
@@ -94,15 +95,15 @@ def consume():
 
                 # store the prediction_summary in a DynamoDB table
                 prediction_record = dynamo_client.put_item(
-                    TableName=dynamo_name,
+                    TableName=DYNAMO_NAME,
                     Item=polybot_helper_lib.dict_to_dynamo_format(prediction_summary)
                 )
 
                 # perform a GET request to Polybot to `/results` endpoint
-                result = requests.post(f"{polybot_domain}/results?predictionId={prediction_id}")
+                result = requests.post(f"{ELB_URL}/results?predictionId={prediction_id}")
 
             # Delete the message from the queue as the job is considered as DONE
-            sqs_client.delete_message(QueueUrl=queue_name, ReceiptHandle=receipt_handle)
+            sqs_client.delete_message(QueueUrl=QUEUE_NAME, ReceiptHandle=receipt_handle)
 
 
 if __name__ == "__main__":

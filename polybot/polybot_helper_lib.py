@@ -30,13 +30,12 @@ def upload_file(file_name, bucket, s3_client, object_name=None):
 def count_objects_in_dict(mydict):
     obj_count = {}
     for i in mydict:
-        # test = mydict.get(i)
         obj_name = i.get('class')
 
-        if obj_count.get(obj_name) is not None:
-            obj_count[obj_name] = obj_count[obj_name] + 1
-        else:
+        if obj_count.get(obj_name) is None:
             obj_count[obj_name] = 1
+        else:
+            obj_count[obj_name] = obj_count[obj_name] + 1
 
     return obj_count
 

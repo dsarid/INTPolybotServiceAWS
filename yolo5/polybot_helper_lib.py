@@ -30,7 +30,6 @@ def upload_file(file_name, bucket, s3_client, object_name=None):
 def count_objects_in_dict(mydict):
     obj_count = {}
     for i in mydict:
-        # test = mydict.get(i)
         obj_name = i.get('class')
 
         if obj_count.get(obj_name) is not None:
@@ -66,14 +65,24 @@ def get_secret(secret_name):
 
 
 def dict_to_dynamo_format(srs_dict):
+    """Convert python dictionary to dynammoDB item.
+    this function does not cover all the features and variants of a python dictionary
+    and doesn't suitable for usage out-side of the scope of this project.
+    """
 
     dynamo_dict = {}
     for key, value in srs_dict.items():
-        if type(value) is int or type(value) is float:
-            type_spec = 'N'
-        else:
-            type_spec = 'S'
 
-        dynamo_dict[key] = {type_spec: str(value)}
+        if isinstance(value, list) and isinstance(value[0], dict):
+            list_item = {'L': []}
+            for item in value:
+                list_item.get('L').append({'M': dict_to_dynamo_format(item)})
+            dynamo_dict[key] = list_item
+        else:
+            if type(value) is int or type(value) is float:
+                type_spec = 'N'
+            else:
+                type_spec = 'S'
+            dynamo_dict[key] = {type_spec: str(value)}
     return dynamo_dict
 

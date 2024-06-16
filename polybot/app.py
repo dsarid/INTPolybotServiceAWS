@@ -3,7 +3,6 @@ from flask import request
 import os
 from bot import ObjectDetectionBot
 import boto3
-from botocore.exceptions import ClientError
 import polybot_helper_lib
 import json
 
@@ -14,9 +13,9 @@ app = flask.Flask(__name__)
 # TODO break down this line to multiple steps, for readability and error-checking
 TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret("telegram_bot_token")).get('TELEGRAM_BOT_TOKEN')
 
+DYNAMO_NAME = os.environ['DYNAMO_NAME']
 S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
-
-TELEGRAM_APP_URL = os.environ['TELEGRAM_APP_URL']
+ELB_URL = os.environ['TELEGRAM_APP_URL']
 
 @app.route('/', methods=['GET'])
 def index():
@@ -40,9 +39,15 @@ def results():
     prediction_id = request.args.get('predictionId')
 
     # TODO use the prediction_id to retrieve results from DynamoDB and send to the end-user
+    result = dynamo_client.get_item(
+        TableName=DYNAMO_NAME,
+        Key={
+            "prediction_id": {'S': prediction_id}
+        }
+    )
 
-    chat_id = ...
-    text_results = ...
+    chat_id = result.get('Item').get('chat_id').get('S')
+    text_results = result.get('Item').get('labels').get('L')
 
     bot.send_text(chat_id, text_results)
     return 'Ok'
@@ -56,6 +61,6 @@ def load_test():
 
 
 if __name__ == "__main__":
-    bot = ObjectDetectionBot(TELEGRAM_TOKEN, TELEGRAM_APP_URL, S3_IMAGE_BUCKET)
+    bot = ObjectDetectionBot(TELEGRAM_TOKEN, ELB_URL, S3_IMAGE_BUCKET)
 
     app.run(host='0.0.0.0', port=8443)
