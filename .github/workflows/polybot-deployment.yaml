@@ -47,7 +47,7 @@ jobs:
             for instance_id in $instance_ids; do
           
               # Check if instance is running
-              state=$(aws ec2 describe-instances\
+              state=$(aws ec2 describe-instances --region "eu-central-1" \
                 --query 'Reservations[*].Instances[*].{State:State.Name}' \
                 --filters "Name=instance-id,Values=$instance_id" \
                 --output text)
@@ -57,16 +57,16 @@ jobs:
       
               if [ "$state" != "running" ]; then
                 echo "Starting instance..."
-                aws ec2 start-instances --instance-ids $instance_id
+                aws ec2 start-instances --region "eu-central-1" --instance-ids $instance_id
     
                 # Wait until the instance is running
-                aws ec2 wait instance-running --instance-ids $instance_id
+                aws ec2 wait instance-running --region "eu-central-1" --instance-ids $instance_id
     
                 # Retrieve updated information after starting
               fi
       
             done
-            public_ips=$(aws ec2 describe-instances \
+            public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
               --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
               --filters "Name=tag:${tag_key},Values=${tag_value}" \
               --output text | tr ' ' ',')
