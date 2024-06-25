@@ -74,7 +74,6 @@ jobs:
               --output text | tr ' ' ',')
           
             echo "Public IPS: $public_ips"
-            echo "---"
           
             # TODO ask tal about this line
             echo "ec2_ips=$public_ips" >> $GITHUB_OUTPUT
