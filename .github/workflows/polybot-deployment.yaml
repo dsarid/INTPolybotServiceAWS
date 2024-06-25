@@ -71,8 +71,8 @@ jobs:
               --filters "Name=tag:${tag_key},Values=${tag_value}" \
               --output text)
             
-            public_ips=$(echo $public_ips" | tr ' ' ',')
-            echo "Public IPS: $public_ips
+            public_ips=$(echo $public_ips | tr ' ' ',')
+            echo "Public IPS: $public_ips"
           
             echo "ec2_ips=$public_ips" >> $GITHUB_OUTPUT
           else
