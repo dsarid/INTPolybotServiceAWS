@@ -35,7 +35,8 @@ class Bot:
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
         self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
 
-    def is_current_msg_photo(self, msg):
+    @staticmethod
+    def is_current_msg_photo(msg):
         return 'photo' in msg
 
     def download_user_photo(self, msg):

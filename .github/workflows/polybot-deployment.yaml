@@ -25,7 +25,7 @@ jobs:
           tag_value="polybot"
           
           # AWS CLI command to describe instances with the specified tag
-          instance_info=$(aws ec2 describe-instances\
+          instance_info=$(aws ec2 describe-instances --region "eu-central-1"\
             --query 'Reservations[*].Instances[*].{InstanceId:InstanceId}' \
             --filters "Name=tag:App,Values=polybot" \
             --output text)
