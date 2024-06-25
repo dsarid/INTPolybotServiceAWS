@@ -75,7 +75,6 @@ jobs:
           
             # TODO ask tal about this line
             echo "ec2_ips=$public_ips" >> $GITHUB_OUTPUT
-            echo "::set-output name=ec2_ips::$public_ips"
           else
             echo "No instances found with tag ${tag_key}=${tag_value}"
             echo $IPS
