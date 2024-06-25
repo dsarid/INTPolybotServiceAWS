@@ -38,7 +38,7 @@ def status():
 def results():
     prediction_id = request.args.get('predictionId')
 
-    # TODO use the prediction_id to retrieve results from DynamoDB and send to the end-user
+    # use the prediction_id to retrieve results from DynamoDB and send to the end-user
     result = dynamo_client.get_item(
         TableName=DYNAMO_NAME,
         Key={
