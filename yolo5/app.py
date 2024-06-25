@@ -9,7 +9,7 @@ import json
 import polybot_helper_lib
 import requests
 
-S3_IMAGE_BUCKET = os.environ['BUCKET_NAME']
+S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
 QUEUE_NAME = os.environ['SQS_QUEUE_NAME']
 DYNAMO_NAME = os.environ['DYNAMO_NAME']
 ELB_URL = os.environ["TELEGRAM_APP_URL"]
@@ -23,6 +23,7 @@ with open("data/coco128.yaml", "r") as stream:
 
 
 def consume():
+    logger.info("start runnin...")
     while True:
         response = sqs_client.receive_message(QueueUrl=QUEUE_NAME, MaxNumberOfMessages=1, WaitTimeSeconds=5)
 
@@ -36,14 +37,16 @@ def consume():
             logger.info(f'prediction: {prediction_id}. start processing')
 
             # create a directory to store the images
-            images_dir = "images"
-            if not os.path.exists(images_dir):
-                os.makedirs(images_dir)
+
+            # images_dir = "images"
+            # if not os.path.exists(images_dir):
+            #     os.makedirs(images_dir)
 
             # Receives a URL parameter representing the image to download from S3
             img_name = message.get("img_name")
             chat_id = message.get("msg_id")
-            original_img_path = s3_client.download_file(S3_IMAGE_BUCKET, img_name, f'{images_dir}/{img_name}')
+            s3_client.download_file(S3_IMAGE_BUCKET, img_name, img_name)
+            original_img_path = img_name
 
             logger.info(f'prediction: {prediction_id}/{original_img_path}. Download img completed')
 
@@ -66,7 +69,7 @@ def consume():
             predicted_img_path = Path(f'static/data/{prediction_id}/{original_img_path}')
 
             # Uploads the predicted image (predicted_img_path) to S3 (be careful not to override the original image).
-            polybot_helper_lib.upload_file(predicted_img_path, s3_client, f"predicted_img/{img_name}")
+            polybot_helper_lib.upload_file(predicted_img_path, S3_IMAGE_BUCKET, s3_client, f"predicted_img/{img_name}")
 
             # Parse prediction labels and create a summary
             pred_summary_path = Path(f'static/data/{prediction_id}/labels/{original_img_path.split(".")[0]}.txt')
@@ -99,9 +102,12 @@ def consume():
                     Item=polybot_helper_lib.dict_to_dynamo_format(prediction_summary)
                 )
 
-                # perform a GET request to Polybot to `/results` endpoint
-                result = requests.post(f"{ELB_URL}/results?predictionId={prediction_id}")
+                logger.info(f"http://{ELB_URL}/results?predictionId={prediction_id}")
 
+                # perform a GET request to Polybot to `/results` endpoint
+                result = requests.post(f"http://{ELB_URL}/results?predictionId={prediction_id}")
+
+            logger.info("Prediction done, keep running")
             # Delete the message from the queue as the job is considered as DONE
             sqs_client.delete_message(QueueUrl=QUEUE_NAME, ReceiptHandle=receipt_handle)
 

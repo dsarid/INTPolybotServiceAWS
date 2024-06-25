@@ -27,10 +27,10 @@ def upload_file(file_name, bucket, s3_client, object_name=None):
     return True
 
 
-def count_objects_in_dict(mydict):
+def count_objects_in_list(my_list):
     obj_count = {}
-    for i in mydict:
-        obj_name = i.get('class')
+    for i in my_list:
+        obj_name = i.get('M').get('class').get('S')
 
         if obj_count.get(obj_name) is None:
             obj_count[obj_name] = 1
@@ -38,6 +38,17 @@ def count_objects_in_dict(mydict):
             obj_count[obj_name] = obj_count[obj_name] + 1
 
     return obj_count
+
+
+def parse_info_to_text(obj_count_dict):
+    text = ""
+    for key, value in obj_count_dict.items():
+        if value > 1:
+            text = text + f"there are {value} {key}s,\n"
+        else:
+            text = text + f"there is 1 {key},\n"
+
+    return text
 
 
 def get_secret(secret_name):

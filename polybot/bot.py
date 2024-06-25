@@ -22,14 +22,14 @@ class Bot:
 
         # set the webhook URL
 
-        self.telegram_bot_client.set_webhook(
-            url=f'{telegram_chat_url}/{token}/', timeout=60, certificate=open("YOURPUBLIC.pem", 'r')
-        )
         # self.telegram_bot_client.set_webhook(
-        #     url=f'{telegram_chat_url}/{token}/',
-        #     timeout=60,
-        #     certificate=polybot_helper_lib.get_secret("cert_public_key")
+        #     url=f'{telegram_chat_url}/{token}/', timeout=60, certificate=open('r')
         # )
+        self.telegram_bot_client.set_webhook(
+            url=f'{telegram_chat_url}/{token}/',
+            timeout=60,
+            certificate=polybot_helper_lib.get_secret("cert_public_key")
+        )
 
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
