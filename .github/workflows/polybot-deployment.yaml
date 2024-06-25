@@ -69,9 +69,10 @@ jobs:
             public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
               --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
               --filters "Name=tag:${tag_key},Values=${tag_value}" \
-              --output text | tr '\n' ',')
-          
-            echo "Public IPS: $public_ips"
+              --output text)
+            
+            public_ips=$(echo $public_ips" | tr ' ' ',')
+            echo "Public IPS: $public_ips
           
             echo "ec2_ips=$public_ips" >> $GITHUB_OUTPUT
           else
