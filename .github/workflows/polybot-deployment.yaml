@@ -106,7 +106,7 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com
 
-          IMAGE_VER=0.0.${{ github.run_number }}
+          IMAGE_VER=prod-0.0.${{ github.run_number }}
           IMAGE_NAME=aws-project-polybot:$IMAGE_VER
           docker build -t $IMAGE_NAME .
           docker tag $IMAGE_NAME 019273956931.dkr.ecr.eu-central-1.amazonaws.com/$IMAGE_NAME
