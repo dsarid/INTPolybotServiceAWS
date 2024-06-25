@@ -21,8 +21,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-
-          # Replace <tag-key> and <tag-value> with your specific tag key and value
           tag_key="App"
           tag_value="polybot"
           
