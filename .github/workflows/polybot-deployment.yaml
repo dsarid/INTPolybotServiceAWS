@@ -124,7 +124,7 @@ jobs:
           IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ needs.Build.outputs.ec2_ips }}
+          host: 52.59.240.124,3.120.231.238
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
