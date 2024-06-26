@@ -124,12 +124,15 @@ jobs:
           echo "124"
           IMAGEVER=$IMAGE_VER
         
+          echo "127"
           for IP in $public_ips; do
+            echo "first of loop"
             ssh -i tempkey.pem "ubuntu@$IP" "
               aws ecr get-login-password \
                 --region ${{ env.REGION }} | sudo -u ubuntu docker login --username AWS \
                 --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com;
-          
+              
+              echo "second part"  
               docker stop $(docker ps -q);
               docker container prune -f;
               docker run --restart on-failure \
