@@ -120,11 +120,11 @@ jobs:
 
       - name: Deploy new version
         env:
-          IPS: ${{ needs.setup.ec2_ips }}
-          IMAGE_VER: ${{ needs.Build.image_ver }}
+          IPS: ${{ needs.setup.outputs.ec2_ips }}
+          IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ needs.setup.ec2_ips }}
+          host: ${{ needs.Build.outputs.image_ver }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
