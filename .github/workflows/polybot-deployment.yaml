@@ -78,17 +78,6 @@ jobs:
           echo "this is line 78"
           # echo "instance_info=\"${instance_info}\"" >> "$GITHUB_ENV"
           echo "this is line is 80"
-          echo "action_state=yellow" >> "$GITHUB_ENV"
-      - name: Check if instance_info is not empty
-        id: validate_inst
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
-        run: |
-          # instance_info=${{ steps.set_ip.outputs.instance_info }}
-          tag_key="App"
-          tag_value="polybot"
           
           # Check if instance_info is not empty
           if [ -n "$instance_info" ]; then
