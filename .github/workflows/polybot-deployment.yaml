@@ -113,14 +113,15 @@ jobs:
               # Retrieve updated information after starting
             fi
           done
-          echo "I'm gonna eat ya"
+          echo "116"
           public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
             --filters "Name=tag:${tag_key},Values=${tag_value}" \
             --output text)
-          echo "now I'm full"
+          echo "121"
           echo $public_ips
           echo ${EC2_SSH_PRIVATE_KEY} >> tempkey.pem
+          echo "124"
           IMAGEVER=$IMAGE_VER
         
           for IP in $public_ips; do
