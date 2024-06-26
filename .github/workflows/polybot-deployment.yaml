@@ -77,55 +77,62 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
         run: |
+          tag_key="App"
+          tag_value="polybot"
+          
           # Check if instance_info is not empty
           if [ -n "$instance_info" ]; then
             # Extract instance IDs from JSON
             instance_ids=$instance_info
-          
-            # Iterate through each instance ID
-            for instance_id in $instance_ids; do
-          
-              # Check if instance is running
-              state=$(aws ec2 describe-instances --region "eu-central-1" \
-                --query 'Reservations[*].Instances[*].{State:State.Name}' \
-                --filters "Name=instance-id,Values=$instance_id" \
-                --output text)
-      
-              echo "Instance ID: $instance_id"
-              echo "Current State: $state"
-      
-              if [ "$state" != "running" ]; then
-                echo "Starting instance..."
-                aws ec2 start-instances --region "eu-central-1" --instance-ids $instance_id
-    
-                # Wait until the instance is running
-                aws ec2 wait instance-running --region "eu-central-1" --instance-ids $instance_id
-    
-                # Retrieve updated information after starting
-              fi
-            
-            done
-            public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
-              --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
-              --filters "Name=tag:${tag_key},Values=${tag_value}" \
-              --output text)
-          
-            echo $EC2_SSH_PRIVATE_KEY > tempkey.pem
-            IMAGEVER=$IMAGE_VER
-          
-            for IP in $public_ips; do
-              ssh -i tempkey.pem "ubuntu@$IP" "
-                aws ecr get-login-password \
-                  --region ${{ env.REGION }} | sudo -u ubuntu docker login --username AWS \
-                  --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com;
-            
-                docker stop $(docker ps -q);
-                docker container prune -f;
-                docker run --restart on-failure \
-                  --name poly -d -p 8443:8443 \
-                  019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
           else
             echo "No instances found with tag ${tag_key}=${tag_value}"
             echo $IPS
             exit 1
           fi
+      - name: Yet another job
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
+        run: | 
+          # Iterate through each instance ID
+          for instance_id in $instance_ids; do
+        
+            # Check if instance is running
+            state=$(aws ec2 describe-instances --region "eu-central-1" \
+              --query 'Reservations[*].Instances[*].{State:State.Name}' \
+              --filters "Name=instance-id,Values=$instance_id" \
+              --output text)
+    
+            echo "Instance ID: $instance_id"
+            echo "Current State: $state"
+    
+            if [ "$state" != "running" ]; then
+              echo "Starting instance..."
+              aws ec2 start-instances --region "eu-central-1" --instance-ids $instance_id
+  
+              # Wait until the instance is running
+              aws ec2 wait instance-running --region "eu-central-1" --instance-ids $instance_id
+  
+              # Retrieve updated information after starting
+            fi
+          done
+          public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
+            --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
+            --filters "Name=tag:${tag_key},Values=${tag_value}" \
+            --output text)
+        
+          echo $EC2_SSH_PRIVATE_KEY > tempkey.pem
+          IMAGEVER=$IMAGE_VER
+        
+          for IP in $public_ips; do
+            ssh -i tempkey.pem "ubuntu@$IP" "
+              aws ecr get-login-password \
+                --region ${{ env.REGION }} | sudo -u ubuntu docker login --username AWS \
+                --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com;
+          
+              docker stop $(docker ps -q);
+              docker container prune -f;
+              docker run --restart on-failure \
+                --name poly -d -p 8443:8443 \
+                019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
