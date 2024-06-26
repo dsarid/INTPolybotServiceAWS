@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Checkout the repo code
 
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Build and push image
         id: build
@@ -44,6 +44,9 @@ jobs:
     needs:
       - Build
     steps:
+      - name: Checkout the repo code
+        uses: actions/checkout@v4
+
       - name: Fetch EC2 Public IPs
         id: set_ip
         env:
