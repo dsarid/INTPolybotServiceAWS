@@ -22,4 +22,4 @@ ENV SQS_QUEUE_NAME="dms-aws-project-queue"
 # Specify the command to run the application
 CMD ["python3", "app.py"]
 
-# it might work this time
+# it might work silly mistake
