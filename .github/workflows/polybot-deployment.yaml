@@ -118,6 +118,9 @@ jobs:
                 docker container prune -f
                 docker run --restart on-failure \
                   --name poly -d -p 8443:8443 \
-                  "019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER"
-              "
+                  019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER"
+          else
+            echo "No instances found with tag ${tag_key}=${tag_value}"
+            echo $IPS
+            exit 1
           fi
