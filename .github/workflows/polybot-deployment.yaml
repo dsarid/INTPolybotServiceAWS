@@ -41,6 +41,10 @@ jobs:
 
   Deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
     needs:
       - Build
     steps:
@@ -71,12 +75,15 @@ jobs:
           $instance_info
             ----
           "
+          echo "instance_info=$instance_info" >> $GITHUB_OUTPUT
       - name: Check if instance_info is not empty
+        id: validate_inst
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
         run: |
+          instance_info=${{ steps.set_ip.outputs.instance_info }}
           tag_key="App"
           tag_value="polybot"
           
@@ -84,6 +91,7 @@ jobs:
           if [ -n "$instance_info" ]; then
             # Extract instance IDs from JSON
             instance_ids=$instance_info
+            echo "instance_ids=$instance_ids" >> $GITHUB_OUTPUT
           else
             echo "No instances found with tag ${tag_key}=${tag_value}"
             echo $IPS
@@ -96,6 +104,7 @@ jobs:
           IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
         run: | 
           # Iterate through each instance ID
+          instance_ids=${{ steps.validate_inst.outputs.instance_ids }}
           for instance_id in $instance_ids; do
         
             # Check if instance is running
