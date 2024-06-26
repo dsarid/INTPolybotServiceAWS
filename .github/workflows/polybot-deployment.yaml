@@ -83,18 +83,13 @@ jobs:
           if [ -n "$instance_info" ]; then
             # Extract instance IDs from JSON
             instance_ids=$instance_info
-            echo "instance_ids=$instance_ids" >> "$GITHUB_ENV"
+
           else
             echo "No instances found with tag ${tag_key}=${tag_value}"
             echo $IPS
             exit 1
           fi
-      - name: Yet another job
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
-        run: | 
+
           # Iterate through each instance ID
           # instance_ids=${{ steps.validate_inst.outputs.instance_ids }}
           for instance_id in $instance_ids; do
