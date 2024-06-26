@@ -118,7 +118,8 @@ jobs:
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
             --filters "Name=tag:${tag_key},Values=${tag_value}" \
             --output text)
-        
+          echo "now I'm full"
+          echo public_ips
           echo $EC2_SSH_PRIVATE_KEY > tempkey.pem
           IMAGEVER=$IMAGE_VER
         
