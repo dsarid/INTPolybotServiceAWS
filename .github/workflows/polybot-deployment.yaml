@@ -113,6 +113,7 @@ jobs:
               # Retrieve updated information after starting
             fi
           done
+          echo "I'm gonna eat ya"
           public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
             --filters "Name=tag:${tag_key},Values=${tag_value}" \
