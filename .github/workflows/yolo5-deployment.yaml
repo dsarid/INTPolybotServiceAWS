@@ -57,7 +57,7 @@ jobs:
           IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
         run: |
           tag_key="App"
-          tag_value="polybot"
+          tag_value="yolo5"
           
           # AWS CLI command to describe instances with the specified tag
           instance_info=$(aws ec2 describe-instances --region "eu-central-1"\

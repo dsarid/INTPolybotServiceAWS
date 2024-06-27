@@ -108,7 +108,7 @@ def consume():
                 # perform a GET request to Polybot to `/results` endpoint
                 result = requests.post(f"http://{ELB_URL}/results?predictionId={prediction_id}")
             else:
-                logger.info("NOTHING TO PREDICT")
+                logger.info("NOTHING TO PREDICT!")
 
             logger.info("Prediction done, keep running")
             # Delete the message from the queue as the job is considered as DONE
