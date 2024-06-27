@@ -4,8 +4,8 @@ on:
   push:
     paths:
       - 'polybot/**'
-    branches:
-      - main
+#    branches:
+#      - main
 env:
   REGION: "eu-central-1"
 
@@ -89,7 +89,13 @@ jobs:
             echo $IPS
             exit 1
           fi
-
+      - name: make sure all instances are running
+        id: start_inst
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
+        run: |
           # Iterate through each instance ID
           # instance_ids=${{ steps.validate_inst.outputs.instance_ids }}
           for instance_id in $instance_ids; do
@@ -113,6 +119,13 @@ jobs:
               # Retrieve updated information after starting
             fi
           done
+      - name: get ips
+        id: get_ips
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
+        run: |
           echo "116"
           public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
@@ -120,11 +133,20 @@ jobs:
             --output text)
           echo "121"
           echo $public_ips
+          
           echo ${EC2_SSH_PRIVATE_KEY} >> tempkey.pem
           echo "124"
+      - name: connect to ec2
+        id: connect
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
+        run: |
           IMAGEVER=$IMAGE_VER
         
           echo "127"
+          IFS=$'\n'
           for IP in $public_ips; do
             echo "first of loop"
             ssh -i tempkey.pem "ubuntu@$IP" "
