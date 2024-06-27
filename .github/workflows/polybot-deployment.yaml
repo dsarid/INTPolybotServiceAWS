@@ -134,7 +134,7 @@ jobs:
           echo "121"
           echo $public_ips
           
-          echo ${{ secrets.EC2_SSH_PRIVATE_KEY }} >> tempkey.pem
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" >> tempkey.pem
           echo "124"
       - name: connect to ec2
         id: connect
