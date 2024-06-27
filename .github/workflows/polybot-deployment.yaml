@@ -2,10 +2,10 @@ name: Polybot Microservice Deployment
 
 on:
   push:
-#    paths:
-#      - 'polybot/**'
-#    branches:
-#      - main
+    paths:
+      - 'polybot/**'
+    branches:
+      - main
 env:
   REGION: "eu-central-1"
 
@@ -17,15 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repo code
-
         uses: actions/checkout@v4
 
       - name: Build and push image
         id: build
         run: |
           cd polybot
-          
-          # TODO your implementation here....     
                     
           # Login to ECR 
           export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -51,7 +48,7 @@ jobs:
       - name: Checkout the repo code
         uses: actions/checkout@v4
 
-      - name: Fetch EC2 Public IPs
+      - name: Deploy new version
         id: set_ip
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -138,6 +138,11 @@ class ObjectDetectionBot(Bot):
 
                 polybot_helper_lib.upload_file(photo_path, self.images_bucket, self.s3)
 
+                if os.path.exists(photo_path):
+                    os.remove(photo_path)
+                else:
+                    print("The file does not exist")
+
                 logger.info("\nUploaded file to s3\n")
 
                 s3_img_name = os.path.split(photo_path)
@@ -154,16 +159,20 @@ class ObjectDetectionBot(Bot):
                         logger.info(f"file probably not there yet :/ attempt no: {i}")
                         time.sleep(5)
 
-                # Send a job to the SQS queue
-                message_dict = {
-                    "img_name": s3_img_name[1],
-                    "msg_id": msg['chat']['id']
-                }
+                if not message_received:
+                    self.send_text(msg['chat']['id'], text="Internal server error, please try again later")
 
-                # send message to the Telegram end-user (e.g. Your image is being processed. Please wait...)
-                json_string = json.dumps(message_dict, indent=4)
-                response = self.sqs_client.send_message(QueueUrl=self.queue_name, MessageBody=json_string)
-                self.send_text(msg['chat']['id'], text="Your image is being processed. Please wait...")
+                else:
+                    # Send a job to the SQS queue
+                    message_dict = {
+                        "img_name": s3_img_name[1],
+                        "msg_id": msg['chat']['id']
+                    }
+
+                    # send message to the Telegram end-user (e.g. Your image is being processed. Please wait...)
+                    json_string = json.dumps(message_dict, indent=4)
+                    response = self.sqs_client.send_message(QueueUrl=self.queue_name, MessageBody=json_string)
+                    self.send_text(msg['chat']['id'], text="Your image is being processed. Please wait...")
 
             else:
                 # TODO add informative error message
