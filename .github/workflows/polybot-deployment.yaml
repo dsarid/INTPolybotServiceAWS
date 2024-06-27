@@ -2,8 +2,8 @@ name: Polybot Microservice Deployment
 
 on:
   push:
-    paths:
-      - 'polybot/**'
+#    paths:
+#      - 'polybot/**'
     branches:
       - main
 env:
@@ -144,12 +144,13 @@ jobs:
           IMAGE_VER: ${{ needs.Build.outputs.image_ver }}
         run: |
           IMAGEVER=$IMAGE_VER
-        
+          echo $public_ips
           echo "127"
+          
           IFS=$'\n'
           for IP in $public_ips; do
             echo "first of loop"
-            ssh -i tempkey.pem "ubuntu@$IP" "
+            ssh -i tempkey.pem -o StrictHostKeyChecking=no "ubuntu@$IP" "
               aws ecr get-login-password \
                 --region ${{ env.REGION }} | sudo -u ubuntu docker login --username AWS \
                 --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com;
