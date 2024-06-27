@@ -85,6 +85,7 @@ def consume():
                         'height': float(l[4]),
                     } for l in labels]
 
+
                 logger.info(f'prediction: {prediction_id}/{original_img_path}. prediction summary:\n\n{labels}')
 
                 prediction_summary = {
@@ -106,6 +107,8 @@ def consume():
 
                 # perform a GET request to Polybot to `/results` endpoint
                 result = requests.post(f"http://{ELB_URL}/results?predictionId={prediction_id}")
+            else:
+                logger.info("NOTHING TO PREDICT")
 
             logger.info("Prediction done, keep running")
             # Delete the message from the queue as the job is considered as DONE
