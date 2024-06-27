@@ -136,7 +136,8 @@ jobs:
                 --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com;
               
               echo "second part"  
-              docker stop $(docker ps -q);
+              docker stop $(docker ps -q -a);
+              docker stop poly;
               docker container prune -f;
               docker run --restart on-failure \
                 --name poly -d -p 8443:8443 \
