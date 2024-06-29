@@ -146,6 +146,8 @@ class ObjectDetectionBot(Bot):
                 logger.info("\nUploaded file to s3\n")
 
                 s3_img_name = os.path.split(photo_path)
+
+                # check up to 5 times if the file is in the s3 bucket
                 for i in range(5):
                     try:
                         logger.info(f"File name: {s3_img_name[1]}")
