@@ -106,58 +106,18 @@ jobs:
   
               # Wait until the instance is running
               aws ec2 wait instance-running --region "eu-central-1" --instance-ids $instance_id
+            fi
+            else
+              echo "Stopping instance..."
+              aws ec2 start-instances --region "eu-central-1" --instance-ids $instance_id
+          
+              # Wait until the instance is stopped
+              aws ec2 wait instance-stopped --region "eu-central-1" --instance-ids $instance_id
+          
+              echo "Starting instance..."
+              aws ec2 start-instances --region "eu-central-1" --instance-ids $instance_id
   
-              # Retrieve updated information after starting
-            fi
-          done
-          echo "116"
-          public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
-            --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
-            --filters "Name=tag:${tag_key},Values=${tag_value}" \
-            --output text)
-          echo "121"
-          echo $public_ips
-          
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" >> tempkey.pem
-          chmod 400 "tempkey.pem"
-          echo "124"
-          IMAGEVER=$IMAGE_VER
-          echo $public_ips
-          echo "127"
-          
-          IFS=$'\n'
-          for IP in $public_ips; do
-            echo "first of loop"
-            ssh -i tempkey.pem -o StrictHostKeyChecking=no "ubuntu@$IP" "
-              aws ecr get-login-password \
-                --region ${{ env.REGION }} | sudo -u ubuntu docker login --username AWS \
-                --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com;
-              
-              echo "second part"  
-              docker stop $(docker ps -q -a);
-              docker stop poly;
-              docker container prune -f;
-              docker run --restart on-failure \
-                --name poly -d -p 8443:8443 \
-                019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
-            
-            echo "start sleeping for 120"
-            sleep 120
-            healthy=$(aws elbv2 describe-target-health \
-            --target-group-arn "arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6" --output text)
-          
-            echo "$healthy"
-            healthy_instances="$(echo "${healthy}" | grep "healthy" | wc -l)"
-          
-            echo "$healthy_instances"
-            if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
-              sleep 180
-              healthy_instances="$(aws elbv2 describe-target-health \
-              --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
-              | grep "healthy" | wc -l)"
-            fi
-            if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
-              echo "One or more of the instances are not healthy after the update, please check the logs."
-              exit 1
+              # Wait until the instance is running
+              aws ec2 wait instance-running --region "eu-central-1" --instance-ids $instance_id
             fi
           done
