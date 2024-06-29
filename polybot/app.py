@@ -5,6 +5,7 @@ from bot import ObjectDetectionBot
 import boto3
 import polybot_helper_lib
 import json
+import jsonify
 
 dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
 
@@ -20,6 +21,14 @@ ELB_URL = os.environ['TELEGRAM_APP_URL']
 @app.route('/', methods=['GET'])
 def index():
     return 'Ok'
+
+
+@app.route('/', methods=['POST'])
+def my_command():
+    if request.json["type"] == 1:
+        return jsonify({
+            "type": 1
+        })
 
 
 @app.route(f'/{TELEGRAM_TOKEN}/', methods=['POST'])
