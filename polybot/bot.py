@@ -171,6 +171,7 @@ class ObjectDetectionBot(Bot):
                     # send message to the Telegram end-user (e.g. Your image is being processed. Please wait...)
                     json_string = json.dumps(message_dict, indent=4)
                     response = self.sqs_client.send_message(QueueUrl=self.queue_name, MessageBody=json_string)
+                    print(response)
                     self.send_text(msg['chat']['id'], text="Your image is being processed. Please wait...")
 
             else:

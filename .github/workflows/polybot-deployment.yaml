@@ -142,9 +142,9 @@ jobs:
                 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
             
             sleep 60
-            healthy_instances = $(aws elbv2 describe-target-health \
+            healthy_instances="$(aws elbv2 describe-target-health \
             --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
-            | grep "healthy" | wc -l)
+            | grep "healthy" | wc -l)"
             if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
               sleep 180
               healthy_instances = $(aws elbv2 describe-target-health \
