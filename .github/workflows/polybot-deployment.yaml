@@ -2,8 +2,8 @@ name: Polybot Microservice Deployment
 
 on:
   push:
-#    paths:
-#      - 'polybot/**'
+    paths:
+      - 'polybot/**'
     branches:
       - main
 env:
@@ -141,11 +141,6 @@ jobs:
                 --name poly -d -p 8443:8443 \
                 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
             
-            aws elbv2 describe-target-health --region "eu-central-1" --target-group-arn "arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6" --output json
-            echo "Start sleeping"
-            sleep 60
-            aws --version
-
             echo "check"
 
             healthy_instances="$(aws elbv2 describe-target-health --region "eu-central-1" \
@@ -153,6 +148,7 @@ jobs:
           
             echo "$healthy_instances"
             if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
+              echo "Start sleeping"
               sleep 180
               healthy_instances="$(aws elbv2 describe-target-health \
               --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
