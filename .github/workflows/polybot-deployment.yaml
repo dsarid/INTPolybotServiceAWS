@@ -108,7 +108,7 @@ jobs:
               aws ec2 wait instance-running --region "eu-central-1" --instance-ids $instance_id
             else
               echo "Stopping instance..."
-              aws ec2 start-instances --region "eu-central-1" --instance-ids $instance_id
+              aws ec2 stop-instances --region "eu-central-1" --instance-ids $instance_id
           
               # Wait until the instance is stopped
               aws ec2 wait instance-stopped --region "eu-central-1" --instance-ids $instance_id
