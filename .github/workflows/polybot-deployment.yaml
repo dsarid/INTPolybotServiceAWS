@@ -2,8 +2,8 @@ name: Polybot Microservice Deployment
 
 on:
   push:
-    paths:
-      - 'polybot/**'
+#    paths:
+#      - 'polybot/**'
     branches:
       - main
 env:
@@ -145,7 +145,7 @@ jobs:
             healthy_instances="$(aws elbv2 describe-target-health \
             --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
             | grep "healthy" | wc -l)"
-          
+            echo $healthy_instances
             if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
               sleep 180
               healthy_instances="$(aws elbv2 describe-target-health \
