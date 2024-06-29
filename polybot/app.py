@@ -10,7 +10,6 @@ dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
 
 app = flask.Flask(__name__)
 
-# TODO break down this line to multiple steps, for readability and error-checking
 TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret("telegram_bot_token")).get('TELEGRAM_BOT_TOKEN')
 
 DYNAMO_NAME = os.environ['DYNAMO_NAME']

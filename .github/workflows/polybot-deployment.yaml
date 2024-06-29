@@ -145,13 +145,13 @@ jobs:
             healthy_instances = $(aws elbv2 describe-target-health \
             --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
             | grep "healthy" | wc -l)
-            if [ "$healthy_instances" != "$desired_healthy_instances" ]; do
+            if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
               sleep 180
               healthy_instances = $(aws elbv2 describe-target-health \
               --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
               | grep "healthy" | wc -l)
             fi
-            if [ "$healthy_instances" != "$desired_healthy_instances" ]; do
+            if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
               echo "One or more of the instances are not healthy after the update, please check the logs."
               exit 1
             fi
