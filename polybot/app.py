@@ -16,6 +16,7 @@ DYNAMO_NAME = os.environ['DYNAMO_NAME']
 S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
 ELB_URL = os.environ['TELEGRAM_APP_URL']
 
+
 @app.route('/', methods=['GET'])
 def index():
     return 'Ok'
