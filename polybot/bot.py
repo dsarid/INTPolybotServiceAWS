@@ -127,7 +127,6 @@ class ObjectDetectionBot(Bot):
                 logger.info("\nFilter set to Predict\n")
 
             if self.filter == "Predict":
-                images_dir = "photos/predicted_images"
                 photo_path = self.download_user_photo(msg)
 
                 logger.info("\nDownload image\n")

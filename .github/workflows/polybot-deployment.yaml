@@ -141,7 +141,7 @@ jobs:
                 --name poly -d -p 8443:8443 \
                 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
             
-            sleep 60
+            sleep 120
             healthy_instances="$(aws elbv2 describe-target-health \
             --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
             | grep "healthy" | wc -l)"
