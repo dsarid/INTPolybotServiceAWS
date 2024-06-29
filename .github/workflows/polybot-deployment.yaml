@@ -141,7 +141,8 @@ jobs:
                 --name poly -d -p 8443:8443 \
                 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
             
-            echo "Start sleeping"
+            aws elbv2 describe-target-health --target-group-arn "arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6" --output json
+            # echo "Start sleeping"
             sleep 120
             aws --version
             healthy=$(aws elbv2 describe-target-health \
