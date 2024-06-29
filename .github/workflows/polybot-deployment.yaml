@@ -57,6 +57,7 @@ jobs:
         run: |
           tag_key="App"
           tag_value="polybot"
+          desired_healthy_instances = '2'
           
           # AWS CLI command to describe instances with the specified tag
           instance_info=$(aws ec2 describe-instances --region "eu-central-1"\
@@ -139,4 +140,19 @@ jobs:
               docker run --restart on-failure \
                 --name poly -d -p 8443:8443 \
                 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
+            
+            sleep 60
+            healthy_instances = $(aws elbv2 describe-target-health \
+            --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
+            | grep "healthy" | wc -l)
+            if [ $healthy_instances != $desired_healthy_instances ]; do
+              sleep 180
+              healthy_instances = $(aws elbv2 describe-target-health \
+              --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text \
+              | grep "healthy" | wc -l)
+            fi
+            if [ $healthy_instances != $desired_healthy_instances ]; do
+              echo "One or more of the instances are not healthy after the update, please check the logs."
+              exit 1
+            fi
           done
