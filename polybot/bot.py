@@ -159,9 +159,6 @@ class ObjectDetectionBot(Bot):
                         logger.info(f"file probably not there yet :/ attempt no: {i}")
                         time.sleep(5)
 
-                if not message_received:
-                    self.send_text(msg['chat']['id'], text="Internal server error, please try again later")
-
                 else:
                     # Send a job to the SQS queue
                     message_dict = {
@@ -175,26 +172,13 @@ class ObjectDetectionBot(Bot):
                     self.send_text(msg['chat']['id'], text="Your image is being processed. Please wait...")
 
             else:
-                # TODO add informative error message
-                self.send_text(
-                    msg['chat']['id'],
-                    f"An error occurred. \
-                    You have to provide a picture and one of the following filters:"
-                )
+                self.send_text(msg['chat']['id'], "Please send a picture with \"Predict\" comment.")
                 self.filter = None
 
             if not message_received:
-                self.send_text(
-                    msg['chat']['id'],
-                    f"An error occurred. \
-                    You have to provide a picture and one of the following filters:"
-                )
+                self.send_text(msg['chat']['id'], text="Internal server error, please try again later")
                 self.filter = None
 
         else:
-            self.send_text(
-                msg['chat']['id'],
-                f"An error occurred. \
-                You have to provide a picture and one of the following filters:"
-            )
+            self.send_text(msg['chat']['id'], "Please send a picture with \"Predict\" comment.")
             self.filter = None
