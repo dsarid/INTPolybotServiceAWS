@@ -143,10 +143,10 @@ jobs:
             
             sleep 120
             healthy=$(aws elbv2 describe-target-health \
-            --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output text)
+            --target-group-arn arn:aws:elasticloadbalancing:eu-central-1:019273956931:targetgroup/danielms-aws-tg-2/85daffb55a7722f6 --output json)
           
             echo "$healthy"
-            healthy_instances="$(echo "${healthy}" | grep "healthy" | wc -l)"
+            healthy_instances="$(echo "${healthy}" | grep "\"State\": \"healthy\"" | wc -l)"
           
             echo "$healthy_instances"
             if [ "$healthy_instances" != "$desired_healthy_instances" ]; then
