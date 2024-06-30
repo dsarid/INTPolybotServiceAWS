@@ -100,7 +100,7 @@ jobs:
             echo "Instance ID: $instance_id"
             echo "Current State: $state"
     
-            if [ "$state" != "running" ]; then
+            if [ "$state" != "running" ] && [ "$state" != "terminated" ]; then
               echo "Starting instance..."
               aws ec2 start-instances --region "eu-central-1" --instance-ids $instance_id
   
