@@ -2,8 +2,8 @@ name: Polybot Microservice Deployment
 
 on:
   push:
-#    paths:
-#      - 'polybot/**'
+    paths:
+      - 'polybot/**'
     branches:
       - main
 env:
@@ -112,7 +112,7 @@ jobs:
           done
           public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
-            --filters "Name=tag:${tag_key},Values=${tag_value}" \
+            --filters "Name=tag:${tag_key},Values=${tag_value}" "Name=instance-state-name,Values=running" \
             --output text)
           echo $public_ips
           
