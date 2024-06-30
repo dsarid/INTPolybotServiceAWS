@@ -62,7 +62,7 @@ jobs:
           # AWS CLI command to describe instances with the specified tag
           instance_info=$(aws ec2 describe-instances --region "eu-central-1"\
             --query 'Reservations[*].Instances[*].{InstanceId:InstanceId}' \
-            --filters "Name=tag:${tag_key},${tag_value}" \
+            --filters "Name=tag:App,Values=yolo5" \
             --output text)
           
           # Output the the tag:
