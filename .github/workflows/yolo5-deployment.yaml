@@ -62,7 +62,7 @@ jobs:
           # AWS CLI command to describe instances with the specified tag
           instance_info=$(aws ec2 describe-instances --region "eu-central-1"\
             --query 'Reservations[*].Instances[*].{InstanceId:InstanceId}' \
-            --filters "Name=tag:App,Values=yolo5" \
+            --filters "Name=tag:App,Values=yolo5" "Name=instance-state-name,Values=running" \
             --output text)
           
           # Output the the tag:
@@ -73,7 +73,6 @@ jobs:
           $instance_info
             ----
           "
-          echo "this is line 78"
           # echo "instance_info=\"${instance_info}\"" >> "$GITHUB_ENV"
           echo "this is line is 80"
           
@@ -113,7 +112,7 @@ jobs:
 
           public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
-            --filters "Name=tag:${tag_key},Values=${tag_value}" "Name=instance-state-name,Values=running" \
+            --filters "Name=tag:App,Values=yolo5" "Name=instance-state-name,Values=running" \
             --output text)
           echo "121"
           echo $public_ips
