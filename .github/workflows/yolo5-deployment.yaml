@@ -62,7 +62,7 @@ jobs:
           # AWS CLI command to describe instances with the specified tag
           instance_info=$(aws ec2 describe-instances --region "eu-central-1"\
             --query 'Reservations[*].Instances[*].{InstanceId:InstanceId}' \
-            --filters "Name=tag:App,Values=polybot" \
+            --filters "Name=tag:${tag_key},${tag_value}" \
             --output text)
           
           # Output the the tag:
@@ -110,7 +110,7 @@ jobs:
               # Retrieve updated information after starting
             fi
           done
-          echo "116"
+
           public_ips=$(aws ec2 describe-instances --region "eu-central-1" \
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
             --filters "Name=tag:${tag_key},Values=${tag_value}" \
@@ -120,7 +120,6 @@ jobs:
           
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" >> tempkey.pem
           chmod 400 "tempkey.pem"
-          echo "124"
           IMAGEVER=$IMAGE_VER
           echo $public_ips
           echo "127"
@@ -135,11 +134,11 @@ jobs:
               
               echo "second part"  
               docker stop $(docker ps -q -a);
-              docker stop poly;
+              docker stop yolo5;
               docker container prune -f;
               docker run --restart on-failure \
-                --name poly -d -p 8443:8443 \
-                019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER;"
+                --name yolo5 -d -p 8443:8443 \
+                019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-yolo5:$IMAGEVER;"
           done
     
      
