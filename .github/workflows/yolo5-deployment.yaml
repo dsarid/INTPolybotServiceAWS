@@ -2,8 +2,8 @@ name: Yolo5 Microservice Deployment
 
 on:
   push:
-#    paths:
-#      - 'yolo5/**'
+    paths:
+      - 'yolo5/**'
     branches:
       - main
 env:
@@ -121,7 +121,6 @@ jobs:
           chmod 400 "tempkey.pem"
           IMAGEVER=$IMAGE_VER
           echo $public_ips
-          echo "127"
           
           IFS=$'\n'
           for IP in $public_ips; do
