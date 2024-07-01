@@ -138,6 +138,7 @@ class ObjectDetectionBot(Bot):
 
                 polybot_helper_lib.upload_file(photo_path, self.images_bucket, self.s3)
 
+                # Delete the received image after uploading it to s3
                 if os.path.exists(photo_path):
                     os.remove(photo_path)
                 else:

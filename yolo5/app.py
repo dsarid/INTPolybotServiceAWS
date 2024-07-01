@@ -118,6 +118,10 @@ def consume():
 
             logger.info("Prediction done, keep running")
             # Delete the message from the queue as the job is considered as DONE
+            if os.path.exists(original_img_path):
+                os.remove(original_img_path)
+            else:
+                print("The file does not exist")
             sqs_client.delete_message(QueueUrl=QUEUE_NAME, ReceiptHandle=receipt_handle)
 
 
