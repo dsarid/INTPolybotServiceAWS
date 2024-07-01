@@ -8,6 +8,7 @@ import boto3
 import json
 import polybot_helper_lib
 import requests
+import database_interface
 
 S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
 QUEUE_NAME = os.environ['SQS_QUEUE_NAME']
@@ -100,6 +101,11 @@ def consume():
                 prediction_record = dynamo_client.put_item(
                     TableName=DYNAMO_NAME,
                     Item=polybot_helper_lib.dict_to_dynamo_format(prediction_summary)
+                )
+
+                prediction_record = database_interface.put_item(
+                    "DYNAMODB", dynamo_client, polybot_helper_lib.dict_to_dynamo_format(prediction_summary),
+                    DYNAMO_NAME
                 )
 
                 logger.info(f"http://{ELB_URL}/results?predictionId={prediction_id}")
