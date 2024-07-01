@@ -89,6 +89,7 @@ class ObjectDetectionBot(Bot):
 
     @staticmethod
     def _add_date_to_filename_(file_path):
+        """added a date to a given filename"""
         # Split the file path into directory and filename
         directory, filename = os.path.split(file_path)
 
