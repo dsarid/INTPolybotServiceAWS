@@ -32,4 +32,5 @@ sudo -u ubuntu aws ecr get-login-password --region eu-central-1 | sudo -u ubuntu
 
 sudo -u ubuntu docker stop polybot
 sudo -u ubuntu docker container prune -f
-sudo -u ubuntu docker run --restart always --env-file /home/ubuntu/.env --name polybot -d -p 8443:8443 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER
+# TODO add restart always later.
+sudo -u ubuntu docker run --env-file "/home/ubuntu/.env" --name polybot -d -p 8443:8443 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER
