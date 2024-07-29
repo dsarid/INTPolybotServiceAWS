@@ -1,4 +1,12 @@
 resource "aws_iam_role" "polybot-role" {
+  depends_on = [
+    aws_iam_policy.policy_poly_secret,
+    aws_iam_policy.policy_poly_ecr,
+    aws_iam_policy.policy_poly_dynamodb,
+    aws_iam_policy.policy_poly_s3,
+    aws_iam_policy.policy_poly_sqs,
+    aws_iam_policy.policy_poly_acm
+  ]
   name                = "dsarid-polybot-tf-role-${var.region}"
   assume_role_policy  = jsonencode({
     "Version": "2012-10-17",
@@ -115,7 +123,7 @@ resource "aws_iam_policy" "policy_poly_s3" {
 
 resource "aws_iam_policy" "policy_poly_sqs" {
   depends_on = [aws_sqs_queue.polybot-sqs]
-  name = "danielms-s3-tf-policy-${var.region}"
+  name = "danielms-sqs-tf-policy-${var.region}"
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
