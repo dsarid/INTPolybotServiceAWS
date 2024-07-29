@@ -11,6 +11,7 @@ dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
 app = flask.Flask(__name__)
 
 TELEGRAM_SECRET_TOKEN = os.environ['TELEGRAM_SECRET_TOKEN']
+print(TELEGRAM_SECRET_TOKEN)
 TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret(TELEGRAM_SECRET_TOKEN)).get('TELEGRAM_BOT_TOKEN')
 
 CERTIFICATE_ARN = os.environ['CERTIFICATE_ARN']
