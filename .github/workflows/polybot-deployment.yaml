@@ -73,7 +73,6 @@ jobs:
           $instance_info
             ----
           "
-          echo "this is line 78"
           # echo "instance_info=\"${instance_info}\"" >> "$GITHUB_ENV"
           echo "this is line is 80"
           

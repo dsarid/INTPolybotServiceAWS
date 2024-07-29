@@ -11,7 +11,7 @@ import json
 
 class Bot:
 
-    def __init__(self, token, telegram_chat_url):
+    def __init__(self, token, telegram_chat_url, cert):
         # create a new instance of the TeleBot class.
         # all communication with Telegram servers are done using self.telegram_bot_client
         self.telegram_bot_client = telebot.TeleBot(token)
@@ -21,10 +21,11 @@ class Bot:
         time.sleep(0.5)
 
         # set the webhook URL
+        boto_client = boto3.client('acm')
         self.telegram_bot_client.set_webhook(
             url=f'{telegram_chat_url}/{token}/',
             timeout=60,
-            certificate=polybot_helper_lib.get_secret("cert_public_key")
+            certificate=boto_client.get_certificate(CertificateArn=cert)["Certificate"]
         )
 
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
@@ -75,8 +76,8 @@ class Bot:
 
 
 class ObjectDetectionBot(Bot):
-    def __init__(self, token, telegram_chat_url, images_bucket):
-        super().__init__(token, telegram_chat_url)
+    def __init__(self, token, telegram_chat_url, cert, images_bucket):
+        super().__init__(token, telegram_chat_url, cert)
         self.media_group = None
         self.filter = None
 

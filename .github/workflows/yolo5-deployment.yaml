@@ -74,7 +74,6 @@ jobs:
             ----
           "
           # echo "instance_info=\"${instance_info}\"" >> "$GITHUB_ENV"
-          echo "this is line is 80"
           
           # Check if instance_info is not empty
           if [ -n "$instance_info" ]; then
@@ -114,7 +113,6 @@ jobs:
             --query 'Reservations[*].Instances[*].{PublicIpAddress:PublicIpAddress}' \
             --filters "Name=tag:App,Values=yolo5" "Name=instance-state-name,Values=running" \
             --output text)
-          echo "121"
           echo $public_ips
           
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" >> tempkey.pem
@@ -138,5 +136,3 @@ jobs:
                 --name yolo5 -d -p 8443:8443 \
                 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-yolo5:$IMAGEVER;"
           done
-    
-     

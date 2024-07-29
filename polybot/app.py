@@ -10,8 +10,10 @@ dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
 
 app = flask.Flask(__name__)
 
-TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret("telegram_bot_token")).get('TELEGRAM_BOT_TOKEN')
+TELEGRAM_SECRET_TOKEN = os.environ['TELEGRAM_SECRET_TOKEN']
+TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret("TELEGRAM_SECRET_TOKEN")).get('TELEGRAM_BOT_TOKEN')
 
+CERTIFICATE_ARN = os.environ['CERTIFICATE_ARN']
 DYNAMO_NAME = os.environ['DYNAMO_NAME']
 S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
 ELB_URL = os.environ['TELEGRAM_APP_URL']
@@ -67,7 +69,7 @@ def load_test():
 
 
 if __name__ == "__main__":
-    bot = ObjectDetectionBot(TELEGRAM_TOKEN, ELB_URL, S3_IMAGE_BUCKET)
+    bot = ObjectDetectionBot(TELEGRAM_TOKEN, ELB_URL, S3_IMAGE_BUCKET, CERTIFICATE_ARN)
 
     app.run(host='0.0.0.0', port=8443)
     # final check

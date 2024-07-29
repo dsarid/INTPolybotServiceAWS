@@ -14,6 +14,8 @@ RUN pip install --no-cache-dir matplotlib
 # Copy the rest of the application files
 COPY . .
 
+ENV CERTIFICATE_ARN=""
+ENV TELEGRAM_SECRET_TOKEN=""
 ENV S3_BUCKET="dsarid-aws-project-s3"
 ENV TELEGRAM_APP_URL="danielms-lb-1875524174.eu-central-1.elb.amazonaws.com:8443"
 ENV DYNAMO_NAME="danielms-aws-project-ddb"
