@@ -7,7 +7,7 @@ resource "aws_iam_role" "polybot-role" {
     aws_iam_policy.policy_poly_sqs,
     aws_iam_policy.policy_poly_acm
   ]
-  name                = "dsarid-polybot-tf-role-${var.region}"
+  name                = "dsarid-polybot-tf-role-${var.pb-region}"
   assume_role_policy  = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
@@ -30,9 +30,10 @@ resource "aws_iam_role" "polybot-role" {
   ]
 }
 
+
 resource "aws_iam_policy" "policy_poly_secret" {
   depends_on = [aws_secretsmanager_secret.telegram_token]
-  name = "danielms-secret-tf-policy-${var.region}"
+  name = "danielms-secret-tf-policy-${var.pb-region}"
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
@@ -51,8 +52,8 @@ resource "aws_iam_policy" "policy_poly_secret" {
 }
 
 resource "aws_iam_policy" "policy_poly_dynamodb" {
-  depends_on = [module.dynamodb_table]
-  name = "danielms-dynamodb-tf-policy-${var.region}"
+#   depends_on = [module.dynamodb_table]
+  name = "danielms-dynamodb-tf-policy-${var.pb-region}"
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
@@ -64,14 +65,14 @@ resource "aws_iam_policy" "policy_poly_dynamodb" {
                 "dynamodb:Scan",
                 "dynamodb:Query"
             ],
-            "Resource": module.dynamodb_table.dynamodb_table_arn
+            "Resource": var.dynamodb_table_arn
         }
     ]
   })
 }
 
 resource "aws_iam_policy" "policy_poly_ecr" {
-  name = "danielms-ecr-tf-policy-${var.region}"
+  name = "danielms-ecr-tf-policy-${var.pb-region}"
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
@@ -99,8 +100,8 @@ resource "aws_iam_policy" "policy_poly_ecr" {
 }
 
 resource "aws_iam_policy" "policy_poly_s3" {
-  depends_on = [aws_s3_bucket.main-bucket]
-  name = "danielms-s3-tf-policy-${var.region}"
+#   depends_on = [aws_s3_bucket.main-bucket]
+  name = "danielms-s3-tf-policy-${var.pb-region}"
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
@@ -113,8 +114,8 @@ resource "aws_iam_policy" "policy_poly_s3" {
                 "s3:GetObjectAttributes"
             ],
             "Resource": [
-                aws_s3_bucket.main-bucket.arn,
-                "${aws_s3_bucket.main-bucket.arn}/*"
+                var.s3_arn,
+                "${var.s3_arn}/*"
             ]
         }
     ]
@@ -122,8 +123,8 @@ resource "aws_iam_policy" "policy_poly_s3" {
 }
 
 resource "aws_iam_policy" "policy_poly_sqs" {
-  depends_on = [aws_sqs_queue.polybot-sqs]
-  name = "danielms-sqs-tf-policy-${var.region}"
+#   depends_on = [aws_sqs_queue.polybot-sqs]
+  name = "danielms-sqs-tf-policy-${var.pb-region}"
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
@@ -133,15 +134,15 @@ resource "aws_iam_policy" "policy_poly_sqs" {
             "Action": [
                 "sqs:SendMessage"
             ],
-            "Resource": aws_sqs_queue.polybot-sqs.arn
+            "Resource": var.sqs_arn
         }
     ]
   })
 }
 
 resource "aws_iam_policy" "policy_poly_acm" {
-  depends_on = [aws_acm_certificate.cert]
-  name = "danielms-acm-tf-policy-${var.region}"
+#   depends_on = [aws_acm_certificate.cert]
+  name = "danielms-acm-tf-policy-${var.pb-region}"
   policy = jsonencode({
     "Version": "2012-10-17",
     "Statement": [
@@ -149,7 +150,7 @@ resource "aws_iam_policy" "policy_poly_acm" {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": "acm:GetCertificate",
-            "Resource": aws_acm_certificate.cert.arn
+            "Resource": var.cert_arn
         }
     ]
   })
@@ -157,7 +158,7 @@ resource "aws_iam_policy" "policy_poly_acm" {
 
 
 resource "aws_iam_instance_profile" "ec2_instance_profile_poly" {
-  name = "${var.owner}-polybot-iam-${var.region}"
+  name = "${var.pb-owner}-polybot-iam-${var.pb-region}"
 
   role = aws_iam_role.polybot-role.name  // Reference to the IAM role name
 }

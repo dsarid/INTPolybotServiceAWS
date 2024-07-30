@@ -52,15 +52,7 @@ provider "aws" {
 data "aws_availability_zones" "available_azs"{
   state = "available"
 }
-data "aws_ami" "ubuntu_ami" {
-  most_recent = true
-  owners      = ["099720109477"]  # Canonical owner ID for Ubuntu AMIs
 
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-}
 
 resource "aws_s3_bucket" "main-bucket" {
   bucket = "danielms-tf-main-s3-${var.region}"
@@ -101,8 +93,6 @@ module "app_vpc" {
   }
 }
 
-
-
 resource "aws_sqs_queue" "polybot-sqs" {
   name                      = "${var.owner}-tf-queue"
   delay_seconds             = 0
@@ -117,86 +107,27 @@ resource "aws_sqs_queue" "polybot-sqs" {
 }
 
 
-resource "aws_security_group" "polybot-ec2-sg" {
-  name        = "polybot-ec2-sg"
-  description = "example"
-  vpc_id      = module.app_vpc.vpc_id
-  tags = {
-    Name = "example"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "ssh-polybot-in" {
-  security_group_id = aws_security_group.polybot-ec2-sg.id
-  cidr_ipv4   = "0.0.0.0/0"
-  from_port   = 22
-  to_port   = 22
-  ip_protocol = "tcp"
-}
-
-resource "aws_vpc_security_group_ingress_rule" "lb-in" {
-  security_group_id = aws_security_group.polybot-ec2-sg.id
-  referenced_security_group_id = aws_security_group.lb-sg.id
-  from_port   = 8443
-  to_port   = 8443
-  ip_protocol = "tcp"
-}
-
-resource "aws_vpc_security_group_egress_rule" "internet_access" {
-  security_group_id = aws_security_group.polybot-ec2-sg.id
-  cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = -1
-}
-
 # import {
 #   id = "arn:aws:sqs:eu-central-1:019273956931:dms-aws-project-queue"
 #   to = aws_sqs_queue.polybot-sqs
 # }
 
+module "polybot" {
+  source = "./polybot"
 
-
-resource "aws_secretsmanager_secret" "telegram_token" {
-  name = "tf-telegram-token-tf-new"
-  lifecycle {
-    prevent_destroy = true
-  }
+  pb-token           = var.botToken
+  pb-owner           = var.owner
+  cert_arn           = aws_acm_certificate.cert.arn
+  dns_name           = aws_lb.main-lb.dns_name
+  dynamo_table_name  = module.dynamodb_table.dynamodb_table_id
+  dynamodb_table_arn = module.dynamodb_table.dynamodb_table_arn
+  lb_sg_id           = aws_security_group.lb-sg.id
+  public_subnets     = [module.app_vpc.public_subnets[0], module.app_vpc.public_subnets[1]]
+  pb-region          = var.region
+  s3_arn             = aws_s3_bucket.main-bucket.arn
+  s3_name            = aws_s3_bucket.main-bucket.bucket
+  sqs_arn            = aws_sqs_queue.polybot-sqs.arn
+  sqs_name           = aws_sqs_queue.polybot-sqs.name
+  vpc_id             = module.app_vpc.vpc_id
 }
 
-resource "aws_secretsmanager_secret_version" "example" {
-  secret_id     = aws_secretsmanager_secret.telegram_token.id
-  secret_string = jsonencode({
-    TELEGRAM_BOT_TOKEN = var.botToken
-  })
-}
-
-resource "aws_instance" "my_ec2" {
-  for_each = tomap({"a" = module.app_vpc.public_subnets[0], "b" = module.app_vpc.public_subnets[1]})
-  depends_on = [aws_iam_instance_profile.ec2_instance_profile_poly, module.app_vpc, local_file.compose_user_data_poly]
-#   ami = "ami-0e872aee57663ae2d"
-  ami = data.aws_ami.ubuntu_ami.id
-  instance_type = "t2.micro"
-
-  key_name = "dsarid-frankfurt-key"
-  user_data = file("./${local_file.compose_user_data_poly.filename}")
-  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile_poly.name
-#   availability_zone = each.key
-  subnet_id = each.value
-  vpc_security_group_ids = [aws_security_group.polybot-ec2-sg.id]
-  lifecycle {
-    ignore_changes = [ami]
-    replace_triggered_by = [local_file.generate-env-vars, local_file.compose_user_data_poly]
-  }
-#   provisioner "file" {
-#     source = "./tf-env-vars.env"
-#     destination = "/home/ubuntu/.env"
-#   }
-#
-#   connection {
-#     type = "ssh"
-#     user = "ubuntu"
-#     private_key = file("./")
-#   }
-  tags = {
-    Name = "dsarid-webserver"
-  }
-}
