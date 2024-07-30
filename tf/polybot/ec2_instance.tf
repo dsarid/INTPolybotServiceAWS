@@ -28,7 +28,7 @@ resource "aws_vpc_security_group_ingress_rule" "ssh-polybot-in" {
 
 resource "aws_vpc_security_group_ingress_rule" "lb-in" {
   security_group_id = aws_security_group.polybot-ec2-sg.id
-  referenced_security_group_id = var.lb_sg_id
+  referenced_security_group_id = aws_security_group.lb-sg.id
   from_port   = 8443
   to_port   = 8443
   ip_protocol = "tcp"

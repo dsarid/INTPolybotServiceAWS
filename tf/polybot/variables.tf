@@ -2,6 +2,11 @@ variable "public_subnets" {
   type = list(string)
 }
 
+variable "pb-env" {
+  type = string
+  description = "var.env"
+}
+
 variable "pb-token" {
   type = string
   description = "var.botToken"
@@ -17,10 +22,10 @@ variable "pb-region" {
   description = "var.region"
 }
 
-variable "lb_sg_id" {
-  type = string
-  description = "aws_security_group.lb-sg.id"
-}
+# variable "lb_sg_id" {
+#   type = string
+#   description = "aws_security_group.lb-sg.id"
+# }
 
 variable "vpc_id" {
   type = string
@@ -42,7 +47,7 @@ variable "sqs_arn" {
   description = "aws_sqs_queue.polybot-sqs.arn"
 }
 
-variable "cert_arn" {
-  type = string
-  description = "aws_acm_certificate.cert.arn"
-}
+# variable "cert_arn" {
+#   type = string
+#   description = "aws_acm_certificate.cert.arn"
+# }

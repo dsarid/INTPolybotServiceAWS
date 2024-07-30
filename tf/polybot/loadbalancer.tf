@@ -1,7 +1,7 @@
 resource "aws_security_group" "lb-sg" {
   name        = "tf-lb-security-group"
   description = "example"
-  vpc_id      = module.app_vpc.vpc_id
+  vpc_id      = var.vpc_id
   tags = {
     Name = "tf-lb-security-group"
   }
@@ -30,12 +30,12 @@ resource "aws_vpc_security_group_egress_rule" "lb-out" {
 }
 
 resource "aws_lb" "main-lb" {
-  depends_on = [module.app_vpc]
-  name               = "${var.owner}-tf-alb"
+#   depends_on = [module.app_vpc]
+  name               = "${var.pb-owner}-tf-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb-sg.id]
-  subnets = module.app_vpc.public_subnets
+  subnets = var.public_subnets
   enable_deletion_protection = false
 
 #   provisioner "local-exec" {
@@ -45,7 +45,7 @@ resource "aws_lb" "main-lb" {
 #   }
 
   tags = {
-    Environment = var.env
+    Environment = var.pb-env
   }
 }
 
@@ -55,7 +55,7 @@ resource "aws_lb_target_group" "polybot-tf-tg" {
   name     = "tf-example-lb-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = module.app_vpc.vpc_id
+  vpc_id   = var.vpc_id
 }
 
 resource "aws_lb_listener" "front_end" {

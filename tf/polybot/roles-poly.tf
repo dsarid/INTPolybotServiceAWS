@@ -141,7 +141,7 @@ resource "aws_iam_policy" "policy_poly_sqs" {
 }
 
 resource "aws_iam_policy" "policy_poly_acm" {
-#   depends_on = [aws_acm_certificate.cert]
+  depends_on = [aws_acm_certificate.cert]
   name = "danielms-acm-tf-policy-${var.pb-region}"
   policy = jsonencode({
     "Version": "2012-10-17",
@@ -150,7 +150,7 @@ resource "aws_iam_policy" "policy_poly_acm" {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": "acm:GetCertificate",
-            "Resource": var.cert_arn
+            "Resource": aws_acm_certificate.cert.arn
         }
     ]
   })

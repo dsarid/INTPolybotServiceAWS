@@ -115,13 +115,14 @@ resource "aws_sqs_queue" "polybot-sqs" {
 module "polybot" {
   source = "./polybot"
 
+  pb-env             = var.env
   pb-token           = var.botToken
   pb-owner           = var.owner
-  cert_arn           = aws_acm_certificate.cert.arn
-  dns_name           = aws_lb.main-lb.dns_name
+#   cert_arn           = aws_acm_certificate.cert.arn
+#   dns_name           = aws_lb.main-lb.dns_name
   dynamo_table_name  = module.dynamodb_table.dynamodb_table_id
   dynamodb_table_arn = module.dynamodb_table.dynamodb_table_arn
-  lb_sg_id           = aws_security_group.lb-sg.id
+#   lb_sg_id           = aws_security_group.lb-sg.id
   public_subnets     = [module.app_vpc.public_subnets[0], module.app_vpc.public_subnets[1]]
   pb-region          = var.region
   s3_arn             = aws_s3_bucket.main-bucket.arn
