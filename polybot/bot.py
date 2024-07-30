@@ -21,7 +21,7 @@ class Bot:
         time.sleep(0.5)
 
         # set the webhook URL
-        boto_client = boto3.client('acm')
+        boto_client = boto3.client('acm', region_name='eu-central-1')
         self.telegram_bot_client.set_webhook(
             url=f'{telegram_chat_url}/{token}/',
             timeout=60,

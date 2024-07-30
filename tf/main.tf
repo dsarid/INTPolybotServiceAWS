@@ -177,7 +177,7 @@ resource "aws_instance" "my_ec2" {
   instance_type = "t2.micro"
 
   key_name = "dsarid-frankfurt-key"
-  user_data = file("./polybot-user-data")
+  user_data = file("./${local_file.compose_user_data_poly.filename}")
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile_poly.name
 #   availability_zone = each.key
   subnet_id = each.value
