@@ -70,7 +70,7 @@ def load_test():
 
 
 if __name__ == "__main__":
-    bot = ObjectDetectionBot(TELEGRAM_TOKEN, ELB_URL, S3_IMAGE_BUCKET, CERTIFICATE_ARN)
+    bot = ObjectDetectionBot(TELEGRAM_TOKEN, ELB_URL, CERTIFICATE_ARN, S3_IMAGE_BUCKET)
 
     app.run(host='0.0.0.0', port=8443)
     # final check
