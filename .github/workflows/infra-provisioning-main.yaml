@@ -14,12 +14,15 @@ on:
 
 jobs:
   eu-west-2:
-    if: ${{ github.event.inputs.us-east-1 == 'true' }}
+    if: ${{ github.event.inputs.eu-west-2 == 'true' }}
     uses: ./.github/workflows/infra-provisioning-region.yaml
     with:
       region-code: eu-west-2
     secrets:
-      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_EU_WEST_2 }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
   eu-central-1:
     if: ${{ github.event.inputs.eu-central-1 == 'true' }}
@@ -27,4 +30,6 @@ jobs:
     with:
       region-code: eu-central-1
     secrets:
-      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_EU_CENTRAL_1 }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
