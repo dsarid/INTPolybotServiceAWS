@@ -1,8 +1,8 @@
 
 resource "aws_secretsmanager_secret" "telegram_token" {
-  name = "tf-telegram-token-tf-new"
+  name = "tf-telegram-token-${uuid()}"
   lifecycle {
-    prevent_destroy = true
+    ignore_changes = [name]
   }
 }
 

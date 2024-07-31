@@ -11,7 +11,7 @@ import json
 
 class Bot:
 
-    def __init__(self, token, telegram_chat_url, cert):
+    def __init__(self, token, telegram_chat_url, cert, region):
         # create a new instance of the TeleBot class.
         # all communication with Telegram servers are done using self.telegram_bot_client
         self.telegram_bot_client = telebot.TeleBot(token)
@@ -21,7 +21,7 @@ class Bot:
         time.sleep(0.5)
 
         # set the webhook URL
-        boto_client = boto3.client('acm', region_name='eu-central-1')
+        boto_client = boto3.client('acm', region_name=region)
         self.telegram_bot_client.set_webhook(
             url=f'{telegram_chat_url}/{token}/',
             timeout=60,
@@ -76,13 +76,13 @@ class Bot:
 
 
 class ObjectDetectionBot(Bot):
-    def __init__(self, token, telegram_chat_url, cert, images_bucket):
-        super().__init__(token, telegram_chat_url, cert)
+    def __init__(self, token, telegram_chat_url, cert, images_bucket, region):
+        super().__init__(token, telegram_chat_url, cert, region)
         self.media_group = None
         self.filter = None
 
         self.queue_name = os.environ["SQS_QUEUE_NAME"]
-        self.sqs_client = boto3.client('sqs', region_name='eu-central-1')
+        self.sqs_client = boto3.client('sqs', region_name=region)
         self.s3 = boto3.client('s3')
 
         self.previous_pic = None

@@ -10,14 +10,15 @@ import polybot_helper_lib
 import requests
 import database_interface
 
+REGION = os.environ['REGION']
 S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
 QUEUE_NAME = os.environ['SQS_QUEUE_NAME']
 DYNAMO_NAME = os.environ['DYNAMO_NAME']
 ELB_URL = os.environ["TELEGRAM_APP_URL"]
 
-sqs_client = boto3.client('sqs', region_name='eu-central-1')
+sqs_client = boto3.client('sqs', region_name=REGION)
 s3_client = boto3.client('s3')
-dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
+dynamo_client = boto3.client('dynamodb', region_name=REGION)
 
 with open("data/coco128.yaml", "r") as stream:
     names = yaml.safe_load(stream)['names']

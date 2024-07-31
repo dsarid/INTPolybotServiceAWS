@@ -46,8 +46,9 @@ resource "aws_instance" "my_ec2" {
   ami = data.aws_ami.ubuntu_ami.id
   instance_type = "t2.micro"
 
-  key_name = "dsarid-frankfurt-key"
-  user_data = file("./${local_file.compose_user_data_poly.filename}")
+
+  key_name = var.pb-keyName
+  user_data = local_file.compose_user_data_poly.content
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile_poly.name
 #   availability_zone = each.key
   subnet_id = each.value
@@ -59,6 +60,6 @@ resource "aws_instance" "my_ec2" {
   }
 
   tags = {
-    Name = "dsarid-webserver"
+    Name = "${var.pb-owner}-polybot"
   }
 }

@@ -2,35 +2,24 @@ variable "public_subnets" {
   type = list(string)
 }
 
-variable "pb-env" {
+variable "y5-env" {
   type = string
   description = "var.env"
 }
 
-variable "pb-keyName" {
-  type = string
-}
-
-
-variable "pb-token" {
-  type = string
-  description = "var.botToken"
-}
-
-variable "pb-owner" {
+variable "y5-owner" {
   type = string
   description = "var.owner"
 }
 
-variable "pb-region" {
+variable "y5-region" {
   type = string
   description = "var.region"
 }
 
-# variable "lb_sg_id" {
-#   type = string
-#   description = "aws_security_group.lb-sg.id"
-# }
+variable "y5-keyName" {
+  type = string
+}
 
 variable "vpc_id" {
   type = string
@@ -51,8 +40,3 @@ variable "sqs_arn" {
   type = string
   description = "aws_sqs_queue.polybot-sqs.arn"
 }
-
-# variable "cert_arn" {
-#   type = string
-#   description = "aws_acm_certificate.cert.arn"
-# }

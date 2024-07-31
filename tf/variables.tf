@@ -4,6 +4,10 @@ variable "env" {
   default     = "prod"
 }
 
+variable "keyName" {
+  type = string
+}
+
 variable "botToken" {
   description = "telegram bot token"
   type = string

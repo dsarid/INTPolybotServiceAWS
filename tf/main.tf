@@ -7,7 +7,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "5.52"
+      version = "5.55"
     }
   }
 
@@ -56,7 +56,7 @@ data "aws_availability_zones" "available_azs"{
 
 resource "aws_s3_bucket" "main-bucket" {
   bucket = "danielms-tf-main-s3-${var.region}"
-
+  force_destroy = true
   tags = {
     Name        = "My bucket"
     Environment = "Dev"
@@ -112,6 +112,8 @@ resource "aws_sqs_queue" "polybot-sqs" {
 #   to = aws_sqs_queue.polybot-sqs
 # }
 
+
+
 module "polybot" {
   source = "./polybot"
 
@@ -130,5 +132,57 @@ module "polybot" {
   sqs_arn            = aws_sqs_queue.polybot-sqs.arn
   sqs_name           = aws_sqs_queue.polybot-sqs.name
   vpc_id             = module.app_vpc.vpc_id
+  pb-keyName       = var.keyName
 }
 
+
+module "yolo5" {
+  source = "./yolo5"
+
+  dns_name           = module.polybot.dns_name
+  dynamo_table_name  = module.dynamodb_table.dynamodb_table_id
+  dynamodb_table_arn = module.dynamodb_table.dynamodb_table_arn
+  y5-env             = var.env
+  y5-owner           = var.owner
+  y5-region          = var.region
+  public_subnets     = [module.app_vpc.public_subnets[0], module.app_vpc.public_subnets[1]]
+  s3_arn             = aws_s3_bucket.main-bucket.arn
+  s3_name            = aws_s3_bucket.main-bucket.bucket
+  sqs_arn            = aws_sqs_queue.polybot-sqs.arn
+  sqs_name           = aws_sqs_queue.polybot-sqs.name
+  vpc_id             = module.app_vpc.vpc_id
+  y5-keyName       = var.keyName
+}
+
+# import {
+#   id = "lt-05f51aaa93ac3478d"
+#   to = aws_launch_template.test
+# }
+#
+# resource "aws_launch_template" "test" {
+#   instance_type                        = "t2.medium"
+#   name                                 = "yolo5-tf-asg-template"
+#   image_id                             = data.aws_ami.ubuntu_ami.id
+#   disable_api_stop                     = false
+#   disable_api_termination              = false
+#   key_name                             = "dsarid-frankfurt-key"
+#   block_device_mappings {
+#     device_name  = "/dev/sda1"
+#
+#
+#     ebs {
+#       delete_on_termination = "true"
+#       encrypted             = "false"
+#       iops                  = 3000
+#       throughput            = 125
+#       volume_size           = 20
+#       volume_type           = "gp3"
+#       }
+#   }
+#
+# }
+
+# import {
+#   id = "danielms-aws-project-yolo5-asg"
+#   to = module.yolo5.aws_autoscaling_group.yolo5-asg
+# }

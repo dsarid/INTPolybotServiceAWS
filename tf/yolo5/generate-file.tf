@@ -16,18 +16,20 @@ variable "sqs_name" {
   type = string
   description = "aws_sqs_queue.polybot-sqs.name"
 }
+variable "dns_name" {
+  type = string
+  description = "aws_lb.main-lb.dns_name"
+}
 
 
 resource "local_file" "generate-env-vars" {
   filename = "tf-env-vars.env"
   content = <<EOT
-echo "REGION=${var.pb-region}"
+echo "REGION=${var.y5-region}"
 echo "S3_BUCKET=${var.s3_name}" > ${var.remote_envfile_path}
-echo "TELEGRAM_APP_URL=${aws_lb.main-lb.dns_name}:8443" >> ${var.remote_envfile_path}
+echo "TELEGRAM_APP_URL=${var.dns_name}:80" >> ${var.remote_envfile_path}
 echo "DYNAMO_NAME=${var.dynamo_table_name}" >> ${var.remote_envfile_path}
-echo "TELEGRAM_SECRET_TOKEN=${aws_secretsmanager_secret.telegram_token.name}" >> ${var.remote_envfile_path}
 echo "SQS_QUEUE_NAME=${var.sqs_name}" >> ${var.remote_envfile_path}
-echo "CERTIFICATE_ARN=${aws_acm_certificate.cert.arn}" >> ${var.remote_envfile_path}
 EOT
 }
 
@@ -39,7 +41,7 @@ resource "local_file" "compose_user_data_poly" {
 ${file("./polybot/scripts/aws-conf.txt")}
 #!/bin/bash
 ${local_file.generate-env-vars.content}
-${file("polybot/scripts/poly-user-data-part")}
-${file("polybot/scripts/close-aws-conf")}"
+${file("yolo5/scripts/yolo5-user-data-part")}
+${file("yolo5/scripts/close-aws-conf")}"
 EOT
 }

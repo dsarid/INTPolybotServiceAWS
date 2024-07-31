@@ -6,7 +6,7 @@ import boto3
 import polybot_helper_lib
 import json
 
-dynamo_client = boto3.client('dynamodb', region_name='eu-central-1')
+
 
 app = flask.Flask(__name__)
 
@@ -14,11 +14,13 @@ TELEGRAM_SECRET_TOKEN = os.environ['TELEGRAM_SECRET_TOKEN']
 print(f"{TELEGRAM_SECRET_TOKEN} and the first letter is: {TELEGRAM_SECRET_TOKEN[0]}")
 TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret(TELEGRAM_SECRET_TOKEN)).get('TELEGRAM_BOT_TOKEN')
 
+REGION = os.environ['REGION']
 CERTIFICATE_ARN = os.environ['CERTIFICATE_ARN']
 DYNAMO_NAME = os.environ['DYNAMO_NAME']
 S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
 ELB_URL = os.environ['TELEGRAM_APP_URL']
 
+dynamo_client = boto3.client('dynamodb', region_name=REGION)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -70,7 +72,7 @@ def load_test():
 
 
 if __name__ == "__main__":
-    bot = ObjectDetectionBot(TELEGRAM_TOKEN, ELB_URL, CERTIFICATE_ARN, S3_IMAGE_BUCKET)
+    bot = ObjectDetectionBot(TELEGRAM_TOKEN, ELB_URL, CERTIFICATE_ARN, S3_IMAGE_BUCKET, REGION)
 
     app.run(host='0.0.0.0', port=8443)
     # final check
