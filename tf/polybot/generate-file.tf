@@ -21,8 +21,8 @@ variable "sqs_name" {
 resource "local_file" "generate-env-vars" {
   filename = "tf-env-vars.env"
   content = <<EOT
-echo "REGION=${var.pb-region}"
-echo "S3_BUCKET=${var.s3_name}" > ${var.remote_envfile_path}
+echo "REGION=${var.pb-region}" > ${var.remote_envfile_path}
+echo "S3_BUCKET=${var.s3_name}" >> ${var.remote_envfile_path}
 echo "TELEGRAM_APP_URL=${aws_lb.main-lb.dns_name}:8443" >> ${var.remote_envfile_path}
 echo "DYNAMO_NAME=${var.dynamo_table_name}" >> ${var.remote_envfile_path}
 echo "TELEGRAM_SECRET_TOKEN=${aws_secretsmanager_secret.telegram_token.name}" >> ${var.remote_envfile_path}

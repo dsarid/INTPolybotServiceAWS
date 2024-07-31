@@ -25,8 +25,8 @@ variable "dns_name" {
 resource "local_file" "generate-env-vars" {
   filename = "tf-env-vars.env"
   content = <<EOT
-echo "REGION=${var.y5-region}"
-echo "S3_BUCKET=${var.s3_name}" > ${var.remote_envfile_path}
+echo "REGION=${var.y5-region}" > ${var.remote_envfile_path}
+echo "S3_BUCKET=${var.s3_name}" >> ${var.remote_envfile_path}
 echo "TELEGRAM_APP_URL=${var.dns_name}:80" >> ${var.remote_envfile_path}
 echo "DYNAMO_NAME=${var.dynamo_table_name}" >> ${var.remote_envfile_path}
 echo "SQS_QUEUE_NAME=${var.sqs_name}" >> ${var.remote_envfile_path}
