@@ -39,9 +39,9 @@ jobs:
           terraform init
           
           if [ ${{ matrix.region }} = "eu-central-1" ] ; then
-            export botToken=${{ secrets.TELEGRAM_TOKEN_EU_CENTRAL_1 }}
+            export TF_VAR_botToken=${{ secrets.TELEGRAM_TOKEN_EU_CENTRAL_1 }}
           else
-            export botToken=${{ secrets.TELEGRAM_TOKEN_EU_WEST_2 }}
+            export TF_VAR_botToken=${{ secrets.TELEGRAM_TOKEN_EU_WEST_2 }}
           fi
           
           
