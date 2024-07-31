@@ -38,6 +38,13 @@ jobs:
           # init terraform 
           terraform init
           
+          if [ ${{ matrix.region }} = "eu-central-1" ] ; then
+            export botToken=${{ secrets.TELEGRAM_TOKEN_EU_CENTRAL_1 }}
+          else
+            export botToken=${{ secrets.TELEGRAM_TOKEN_EU_WEST_2 }}
+          fi
+          
+          
           # select workspace or create if needed
           terraform workspace select ${{ matrix.region }}.prod  || terraform workspace new ${{ matrix.region }}.prod
 
