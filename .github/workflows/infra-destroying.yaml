@@ -39,7 +39,7 @@ jobs:
           terraform init
           
           # select workspace or create if needed
-          terraform workspace select ${{ matrix.region }}  || terraform workspace new ${{ matrix.region }}
+          terraform workspace select ${{ matrix.region }}.prod  || terraform workspace new ${{ matrix.region }}.prod
 
           # tf destroy 
           terraform destroy -auto-approve -var-file=region.${{ matrix.region }}.prod.tfvars
