@@ -12,13 +12,13 @@ app = flask.Flask(__name__)
 
 TELEGRAM_SECRET_TOKEN = os.environ['TELEGRAM_SECRET_TOKEN']
 print(f"{TELEGRAM_SECRET_TOKEN} and the first letter is: {TELEGRAM_SECRET_TOKEN[0]}")
-TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret(TELEGRAM_SECRET_TOKEN)).get('TELEGRAM_BOT_TOKEN')
 
 REGION = os.environ['REGION']
 CERTIFICATE_ARN = os.environ['CERTIFICATE_ARN']
 DYNAMO_NAME = os.environ['DYNAMO_NAME']
 S3_IMAGE_BUCKET = os.environ['S3_BUCKET']
 ELB_URL = os.environ['TELEGRAM_APP_URL']
+TELEGRAM_TOKEN = json.loads(polybot_helper_lib.get_secret(TELEGRAM_SECRET_TOKEN, REGION)).get('TELEGRAM_BOT_TOKEN')
 
 dynamo_client = boto3.client('dynamodb', region_name=REGION)
 

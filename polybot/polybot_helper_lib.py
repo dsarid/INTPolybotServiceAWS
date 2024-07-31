@@ -51,9 +51,7 @@ def parse_info_to_text(obj_count_dict):
     return text
 
 
-def get_secret(secret_name):
-
-    region_name = "eu-central-1"
+def get_secret(secret_name, region_name):
 
     # Create a Secrets Manager client
     session = boto3.session.Session()

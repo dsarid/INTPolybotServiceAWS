@@ -40,9 +40,9 @@ def count_objects_in_dict(mydict):
     return obj_count
 
 
-def get_secret(secret_name):
+def get_secret(secret_name, region_name):
 
-    region_name = "eu-central-1"
+
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
