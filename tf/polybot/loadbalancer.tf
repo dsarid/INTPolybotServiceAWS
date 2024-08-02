@@ -32,10 +32,12 @@ resource "aws_vpc_security_group_ingress_rule" "telegram-in-2" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "lb-out" {
+  referenced_security_group_id = aws_security_group.polybot-ec2-sg.id
   security_group_id = aws_security_group.lb-sg.id
-  cidr_ipv4 = "0.0.0.0/0"
+#   cidr_ipv4 = "0.0.0.0/0"
   ip_protocol = -1
 }
+
 
 resource "aws_lb" "main-lb" {
 #   depends_on = [module.app_vpc]
