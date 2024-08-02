@@ -132,7 +132,7 @@ module "polybot" {
   sqs_arn            = aws_sqs_queue.polybot-sqs.arn
   sqs_name           = aws_sqs_queue.polybot-sqs.name
   vpc_id             = module.app_vpc.vpc_id
-  pb-keyName       = var.keyName
+  pb-keyName         = var.keyName
 }
 
 

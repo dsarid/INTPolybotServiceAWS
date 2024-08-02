@@ -15,6 +15,7 @@ resource "aws_security_group" "polybot-ec2-sg" {
   tags = {
     Name = "example"
   }
+
 }
 
 resource "aws_vpc_security_group_ingress_rule" "ssh-polybot-in" {
