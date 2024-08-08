@@ -119,9 +119,9 @@ resource "aws_key_pair" "deployer" {
 #   type = string
 # }
 
-module "poly_ecr" {
-  source = "./poly_ecr"
-}
+# module "poly_ecr" {
+#   source = "./poly_ecr"
+# }
 
 
 module "polybot" {
