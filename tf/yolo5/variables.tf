@@ -17,9 +17,9 @@ variable "y5-region" {
   description = "var.region"
 }
 
-variable "y5-keyName" {
-  type = string
-}
+# variable "y5-keyName" {
+#   type = string
+# }
 
 variable "vpc_id" {
   type = string
@@ -39,4 +39,8 @@ variable "s3_arn" {
 variable "sqs_arn" {
   type = string
   description = "aws_sqs_queue.polybot-sqs.arn"
+}
+
+variable "ssh-key" {
+  type = string
 }

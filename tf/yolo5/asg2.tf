@@ -9,14 +9,14 @@ data "aws_ami" "ubuntu_ami" {
 }
 
 
-
 resource "aws_launch_template" "yolo5_launch_template" {
+#   depends_on = [aws_ecr_repository.yolo5-ecr]
   instance_type                        = "t2.medium"
   name                                 = "yolo5-tf-asg-template"
   image_id                             = data.aws_ami.ubuntu_ami.id
   disable_api_stop                     = false
   disable_api_termination              = false
-  key_name                             = var.y5-keyName
+  key_name                             = var.ssh-key
   user_data                            = base64encode(local_file.compose_user_data_poly.content)
   vpc_security_group_ids = [aws_security_group.yolo5-lt-sg.id]
 

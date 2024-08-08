@@ -7,9 +7,9 @@ variable "pb-env" {
   description = "var.env"
 }
 
-variable "pb-keyName" {
-  type = string
-}
+# variable "pb-keyName" {
+#   type = string
+# }
 
 
 variable "pb-token" {
@@ -56,3 +56,16 @@ variable "sqs_arn" {
 #   type = string
 #   description = "aws_acm_certificate.cert.arn"
 # }
+
+variable "ssh-key" {
+  type = string
+}
+
+# variable "ecr_arn" {
+#   type = string
+# }
+#
+# variable "ecr_name" {
+#   type = string
+# }
+

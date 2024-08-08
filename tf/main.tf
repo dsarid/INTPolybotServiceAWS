@@ -106,12 +106,22 @@ resource "aws_sqs_queue" "polybot-sqs" {
   }
 }
 
+resource "aws_key_pair" "deployer" {
+  key_name   = "${var.owner}-ec2-key-${var.region}"
+  public_key = var.sshPubKey
+}
 
-# import {
-#   id = "arn:aws:sqs:eu-central-1:019273956931:dms-aws-project-queue"
-#   to = aws_sqs_queue.polybot-sqs
+# variable "awsKEY" {
+#   type = string
+# }
+#
+# variable "awsSECRET" {
+#   type = string
 # }
 
+module "poly_ecr" {
+  source = "./poly_ecr"
+}
 
 
 module "polybot" {
@@ -132,7 +142,10 @@ module "polybot" {
   sqs_arn            = aws_sqs_queue.polybot-sqs.arn
   sqs_name           = aws_sqs_queue.polybot-sqs.name
   vpc_id             = module.app_vpc.vpc_id
-  pb-keyName         = var.keyName
+#   pb-keyName         = var.keyName
+  ssh-key            = aws_key_pair.deployer.key_name
+#   ecr_arn            = module.poly_ecr.ecr_arn
+#   ecr_name           = module.poly_ecr.ecr_name
 }
 
 
@@ -151,38 +164,6 @@ module "yolo5" {
   sqs_arn            = aws_sqs_queue.polybot-sqs.arn
   sqs_name           = aws_sqs_queue.polybot-sqs.name
   vpc_id             = module.app_vpc.vpc_id
-  y5-keyName       = var.keyName
+#   y5-keyName         = var.keyName
+  ssh-key            = aws_key_pair.deployer.key_name
 }
-
-# import {
-#   id = "lt-05f51aaa93ac3478d"
-#   to = aws_launch_template.test
-# }
-#
-# resource "aws_launch_template" "test" {
-#   instance_type                        = "t2.medium"
-#   name                                 = "yolo5-tf-asg-template"
-#   image_id                             = data.aws_ami.ubuntu_ami.id
-#   disable_api_stop                     = false
-#   disable_api_termination              = false
-#   key_name                             = "dsarid-frankfurt-key"
-#   block_device_mappings {
-#     device_name  = "/dev/sda1"
-#
-#
-#     ebs {
-#       delete_on_termination = "true"
-#       encrypted             = "false"
-#       iops                  = 3000
-#       throughput            = 125
-#       volume_size           = 20
-#       volume_type           = "gp3"
-#       }
-#   }
-#
-# }
-
-# import {
-#   id = "danielms-aws-project-yolo5-asg"
-#   to = module.yolo5.aws_autoscaling_group.yolo5-asg
-# }

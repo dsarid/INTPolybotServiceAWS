@@ -48,7 +48,7 @@ resource "aws_instance" "my_ec2" {
   instance_type = "t2.micro"
 
 
-  key_name = var.pb-keyName
+  key_name = var.ssh-key
   user_data = local_file.compose_user_data_poly.content
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile_poly.name
 #   availability_zone = each.key

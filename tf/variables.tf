@@ -4,6 +4,11 @@ variable "env" {
   default     = "prod"
 }
 
+variable "sshPubKey" {
+  type = string
+#   default = file("./ssh-key.pub")
+}
+
 variable "keyName" {
   type = string
 }
