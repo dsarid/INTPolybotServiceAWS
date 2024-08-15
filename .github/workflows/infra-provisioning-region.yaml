@@ -56,8 +56,8 @@ jobs:
           $(terraform output -json | jq -r '@sh "export EXAMPLE1=\(.ecr_name.value)\nexport EXAMPLE2=\(.ecr_url.value)"')
           echo "${EXAMPLE1}"
           echo "${EXAMPLE2}"
-          echo "ecr_name=${example1}" >> "$GITHUB_OUTPUT"
-          echo "ecr_url=${example2}" >> "$GITHUB_OUTPUT"
+          echo "ecr_name=${example1:1:-1}" >> "$GITHUB_OUTPUT"
+          echo "ecr_url=${example2:1:-1}" >> "$GITHUB_OUTPUT"
 
 
           cd ../polybot
@@ -68,7 +68,7 @@ jobs:
           aws ecr get-login-password --region ${{ inputs.region-code }} | docker login --username AWS --password-stdin 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com
 
           IMAGE_VER=prod-0.0.${{ github.run_number }}
-          IMAGE_NAME="${EXAMPLE1}:$IMAGE_VER"
+          IMAGE_NAME="${EXAMPLE1:1:-1}:$IMAGE_VER"
           docker build -t $IMAGE_NAME .
           docker tag $IMAGE_NAME 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com/$IMAGE_NAME
           docker push 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com/$IMAGE_NAME
