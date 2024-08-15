@@ -59,22 +59,50 @@ jobs:
           echo "ecr_name=${example1}" >> "$GITHUB_OUTPUT"
           echo "ecr_url=${example2}" >> "$GITHUB_OUTPUT"
 
-  first_build:
+
+  Build:
     needs:
       - init_ecr
-    uses: ./.github/workflows/polybot-first-deployment.yaml
-    with:
-      ecr_name: ${{ needs.init_ecr.outputs.ecr_name }}
-      ecr_url: ${{ needs.init_ecr.outputs.ecr_url }}
-      region: ${{ inputs.region-code }}
-    secrets:
-      ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
-      SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+    outputs:
+      image_ver: ${{ steps.build.outputs.image_ver }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo code
+        uses: actions/checkout@v4
+
+      - name: Build and push image
+        id: build
+        run: |
+          cd polybot
+                    
+          # Login to ECR 
+          export AWS_ACCESS_KEY_ID=${{ secrets.ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.SECRET_ACCESS_KEY }}
+          aws ecr get-login-password --region ${{ inputs.region-code }} | docker login --username AWS --password-stdin 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com
+
+          IMAGE_VER=prod-0.0.${{ github.run_number }}
+          IMAGE_NAME="${{ needs.init_ecr.outputs.ecr_name }}:$IMAGE_VER"
+          docker build -t $IMAGE_NAME .
+          docker tag $IMAGE_NAME 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com/$IMAGE_NAME
+          docker push 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com/$IMAGE_NAME
+          echo "image_ver=$IMAGE_VER" >> "$GITHUB_OUTPUT"
+
+#  first_build:
+#    needs:
+#      - init_ecr
+#    uses: ./.github/workflows/polybot-first-deployment.yaml
+#    with:
+#      ecr_name: ${{ needs.init_ecr.outputs.ecr_name }}
+#      ecr_url: ${{ needs.init_ecr.outputs.ecr_url }}
+#      region: ${{ inputs.region-code }}
+#    secrets:
+#      ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+#      SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
 
 
   Terraform:
-    needs:
-      - first_build
+#    needs:
+#      - first_build
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
