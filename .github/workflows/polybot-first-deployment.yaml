@@ -12,6 +12,11 @@ on:
       region:
         required: true
         type: string
+    secrets:
+      ACCESS_KEY_ID:
+        required: true
+      SECRET_ACCESS_KEY:
+        required: true
 
 env:
   REGION: ${{ inputs.region }}

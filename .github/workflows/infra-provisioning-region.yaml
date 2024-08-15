@@ -62,6 +62,9 @@ jobs:
       ecr_name: ${{ needs.init_ecr.outputs.ecr_name }}
       ecr_url: ${{ needs.init_ecr.outputs.url }}
       region: ${{ inputs.region-code }}
+    secrets:
+      SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
 
   Terraform:
     runs-on: ubuntu-latest
