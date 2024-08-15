@@ -56,8 +56,8 @@ jobs:
           $(terraform output -json | jq -r '@sh "export EXAMPLE1=\(.ecr_name.value)\nexport EXAMPLE2=\(.ecr_url.value)"')
           echo "${EXAMPLE1}"
           echo "${EXAMPLE2}"
-          echo "ecr_name=${example1}" >> $GITHUB_OUTPUT
-          echo "ecr_url=${example2}" >> $GITHUB_OUTPUT
+          echo "ecr_name=${example1}" >> "$GITHUB_OUTPUT"
+          echo "ecr_url=${example2}" >> "$GITHUB_OUTPUT"
 
   first_build:
     needs:
