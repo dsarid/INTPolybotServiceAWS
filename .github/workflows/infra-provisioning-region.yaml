@@ -57,7 +57,7 @@ jobs:
           echo "ecr_url=$example2" >> $GITHUB_OUTPUT
 
   first_build:
-    uses: ./.github/workflows/polybot-deployment.yaml
+    uses: ./.github/workflows/polybot-first-deployment.yaml
     with:
       ecr_name: ${{ needs.init_ecr.outputs.ecr_name }}
       ecr_url: ${{ needs.init_ecr.outputs.url }}
