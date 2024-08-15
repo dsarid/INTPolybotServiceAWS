@@ -119,9 +119,9 @@ resource "aws_key_pair" "deployer" {
 #   type = string
 # }
 
-# module "poly_ecr" {
-#   source = "./poly_ecr"
-# }
+module "poly_ecr" {
+  source = "./poly_ecr"
+}
 
 
 module "polybot" {
@@ -146,6 +146,7 @@ module "polybot" {
   ssh-key            = aws_key_pair.deployer.key_name
 #   ecr_arn            = module.poly_ecr.ecr_arn
 #   ecr_name           = module.poly_ecr.ecr_name
+#   ecr_id             = module.poly_ecr.ecr_registry
 }
 
 

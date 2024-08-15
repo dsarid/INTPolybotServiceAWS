@@ -68,4 +68,8 @@ variable "ssh-key" {
 # variable "ecr_name" {
 #   type = string
 # }
+#
+# variable "ecr_id" {
+#   type = string
+# }
 
