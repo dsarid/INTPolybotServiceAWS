@@ -63,7 +63,7 @@ jobs:
     uses: ./.github/workflows/polybot-first-deployment.yaml
     with:
       ecr_name: ${{ needs.init_ecr.outputs.ecr_name }}
-      ecr_url: ${{ needs.init_ecr.outputs.url }}
+      ecr_url: ${{ needs.init_ecr.outputs.ecr_url }}
       region: ${{ inputs.region-code }}
     secrets:
       ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
@@ -71,6 +71,8 @@ jobs:
 
 
   Terraform:
+    needs:
+      - first_build
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
