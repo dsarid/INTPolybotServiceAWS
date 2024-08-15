@@ -63,6 +63,8 @@ jobs:
   Build:
     needs:
       - init_ecr
+    env:
+      BBB: ${{ needs.init_ecr.outputs.ecr_name }}
     outputs:
       image_ver: ${{ steps.build.outputs.image_ver }}
     runs-on: ubuntu-latest
@@ -81,7 +83,7 @@ jobs:
           aws ecr get-login-password --region ${{ inputs.region-code }} | docker login --username AWS --password-stdin 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com
 
           IMAGE_VER=prod-0.0.${{ github.run_number }}
-          IMAGE_NAME="${{ needs.init_ecr.outputs.ecr_name }}:$IMAGE_VER"
+          IMAGE_NAME="${BBB}:$IMAGE_VER"
           docker build -t $IMAGE_NAME .
           docker tag $IMAGE_NAME 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com/$IMAGE_NAME
           docker push 019273956931.dkr.ecr.${{ inputs.region-code }}.amazonaws.com/$IMAGE_NAME
