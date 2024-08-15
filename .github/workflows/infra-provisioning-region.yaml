@@ -54,8 +54,9 @@ jobs:
           terraform apply -target module.poly_ecr -auto-approve -var-file=region.${{ inputs.region-code }}.prod.tfvars
           $(terraform output -json | jq -r '@sh "export EXAMPLE1=\(.ecr_name.value)\nexport EXAMPLE2=\(.ecr_url.value)"')
           echo "${EXAMPLE1}"
-          echo "ecr_name=${example1}" >> $GITHUB_OUTPUT
-          echo "ecr_url=${example2}" >> $GITHUB_OUTPUT
+          echo "${EXAMPLE2}"
+          echo "ecr_name2=${example1}" >> $GITHUB_OUTPUT
+          echo "ecr_url2=${example2}" >> $GITHUB_OUTPUT
 
   first_build:
     needs:
