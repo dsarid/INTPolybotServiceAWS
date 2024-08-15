@@ -21,8 +21,8 @@ jobs:
   init_ecr:
     runs-on: ubuntu-latest
     outputs:
-      ecr_name: ${{ steps.Terraform-apply.outputs.ecr_name }}
-      ecr_url: ${{ steps.Terraform-apply.ecr_url }}
+      ecr_name: ${{ steps.set-vars.outputs.ecr_name }}
+      ecr_url: ${{ steps.set-vars.outputs.ecr_url }}
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
@@ -48,6 +48,7 @@ jobs:
         run: terraform validate
 
       - name: Terraform-apply
+        id: set-vars
         run: |
           export TF_VAR_sshPubKey="${{ secrets.SSH_PUBLIC_KEY }}"
           export TF_VAR_botToken=${{ secrets.TELEGRAM_TOKEN }}
