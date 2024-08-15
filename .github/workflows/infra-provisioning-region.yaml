@@ -88,8 +88,8 @@ jobs:
 
 
   Terraform:
-#    needs:
-#      - Build
+    needs:
+      - init_ecr
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
