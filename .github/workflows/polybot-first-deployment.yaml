@@ -1,4 +1,4 @@
-name: Polybot Microservice Deployment
+name: Polybot first Microservice Deployment
 
 on:
   workflow_call:
