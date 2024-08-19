@@ -123,6 +123,9 @@ module "poly_ecr" {
   source = "./poly_ecr"
 }
 
+module "yolo_ecr" {
+  source = "./yolo_ecr"
+}
 
 module "polybot" {
   source = "./polybot"
@@ -167,4 +170,7 @@ module "yolo5" {
   vpc_id             = module.app_vpc.vpc_id
 #   y5-keyName         = var.keyName
   ssh-key            = aws_key_pair.deployer.key_name
+  ecr_arn            = module.yolo_ecr.ecr_arn
+  ecr_id             = module.yolo_ecr.ecr_registry
+  ecr_name           = module.yolo_ecr.ecr_name
 }

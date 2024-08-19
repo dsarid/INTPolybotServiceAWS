@@ -40,6 +40,9 @@ resource "local_file" "compose_user_data_poly" {
   content = <<EOT
 ${file("./polybot/scripts/aws-conf.txt")}
 #!/bin/bash
+export ECRID="${var.ecr_id}"
+export ECRNAME="${var.ecr_name}"
+export REGION="${var.y5-region}"
 ${local_file.generate-env-vars.content}
 ${file("yolo5/scripts/yolo5-user-data-part")}
 ${file("yolo5/scripts/close-aws-conf")}"

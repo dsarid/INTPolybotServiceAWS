@@ -41,7 +41,8 @@ resource "aws_iam_policy" "policy_poly_ecr" {
                 "ecr:DescribeImages"
             ],
             "Resource": [
-                "arn:aws:ecr:eu-central-1:019273956931:repository/aws-project-yolo5"
+                "arn:aws:ecr:eu-central-1:019273956931:repository/aws-project-yolo5",
+                var.ecr_arn
             ]
         },
         {

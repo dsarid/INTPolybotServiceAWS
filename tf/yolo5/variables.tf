@@ -44,3 +44,15 @@ variable "sqs_arn" {
 variable "ssh-key" {
   type = string
 }
+
+variable "ecr_arn" {
+  type = string
+}
+
+variable "ecr_name" {
+  type = string
+}
+
+variable "ecr_id" {
+  type = string
+}
