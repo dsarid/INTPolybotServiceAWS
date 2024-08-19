@@ -26,11 +26,11 @@ groupadd docker
 usermod -aG docker ubuntu
 
 
-IMAGEVER=$(aws ecr describe-images --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --repository-name aws-project-polybot --region eu-central-1 --output text)
+IMAGEVER=$(aws ecr describe-images --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --repository-name ${ECRNAME} --region ${REGION} --output text)
 
-sudo -u ubuntu aws ecr get-login-password --region eu-central-1 | sudo -u ubuntu docker login --username AWS --password-stdin 019273956931.dkr.ecr.eu-central-1.amazonaws.com
+sudo -u ubuntu aws ecr get-login-password --region ${REGION} | sudo -u ubuntu docker login --username AWS --password-stdin 019273956931.dkr.ecr.${REGION}.amazonaws.com
 
 sudo -u ubuntu docker stop polybot
 sudo -u ubuntu docker container prune -f
 # TODO add restart always later.
-sudo -u ubuntu docker run --env-file "/home/ubuntu/.env" --name polybot --restart always -d -p 8443:8443 019273956931.dkr.ecr.eu-central-1.amazonaws.com/aws-project-polybot:$IMAGEVER
+sudo -u ubuntu docker run --env-file "/home/ubuntu/.env" --name polybot --restart always -d -p 8443:8443 019273956931.dkr.ecr.${REGION}.amazonaws.com/${ECRNAME}:$IMAGEVER

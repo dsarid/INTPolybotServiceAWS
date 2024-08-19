@@ -144,9 +144,9 @@ module "polybot" {
   vpc_id             = module.app_vpc.vpc_id
 #   pb-keyName         = var.keyName
   ssh-key            = aws_key_pair.deployer.key_name
-#   ecr_arn            = module.poly_ecr.ecr_arn
-#   ecr_name           = module.poly_ecr.ecr_name
-#   ecr_id             = module.poly_ecr.ecr_registry
+  ecr_arn            = module.poly_ecr.ecr_arn
+  ecr_name           = module.poly_ecr.ecr_name
+  ecr_id             = module.poly_ecr.ecr_registry
 }
 
 
