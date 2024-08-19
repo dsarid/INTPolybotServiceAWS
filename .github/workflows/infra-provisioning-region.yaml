@@ -57,6 +57,8 @@ jobs:
           jq -r '@sh "export EXAMPLE1=\(.poly_ecr_name.value)\nexport EXAMPLE2=\(.poly_ecr_url.value)\nexport EXAMPLE3=\(.poly_ecr_name.value)\nexport EXAMPLE4=\(.poly_ecr_url.value)"')
           echo "${EXAMPLE1}"
           echo "${EXAMPLE2}"
+          echo "${EXAMPLE3}"
+          echo "${EXAMPLE4}"
           echo "ecr_name=${example1:1:-1}" >> "$GITHUB_OUTPUT"
           echo "ecr_url=${example2:1:-1}" >> "$GITHUB_OUTPUT"
 
