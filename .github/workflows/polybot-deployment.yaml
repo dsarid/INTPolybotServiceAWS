@@ -39,7 +39,7 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "019273956931.dkr.ecr.${REGION}.amazonaws.com"
 
-          IMAGE_VER=prod-0.0.${{ github.run_number }}
+          IMAGE_VER=prod-1.0.${{ github.run_number }}
           IMAGE_NAME="${{ github.event.inputs.ecr_name }}:$IMAGE_VER"
           docker build -t $IMAGE_NAME .
           docker tag $IMAGE_NAME 019273956931.dkr.ecr.${REGION}.amazonaws.com/$IMAGE_NAME
@@ -91,6 +91,7 @@ jobs:
           if [ -n "$instance_info" ]; then
             # Extract instance IDs from JSON
             instance_ids=$instance_info
+            echo "this is line is 81"
 
           else
             echo "No instances found with tag ${tag_key}=${tag_value}"
@@ -99,8 +100,9 @@ jobs:
           fi
           # Iterate through each instance ID
           # instance_ids=${{ steps.validate_inst.outputs.instance_ids }}
+          echo "this is line is 82"
           for instance_id in $instance_ids; do
-
+              echo "this is line is 83"
               aws ec2 stop-instances --region "${REGION}" --instance-ids $instance_id
 
               # Wait until the instance is running
@@ -108,7 +110,7 @@ jobs:
 
               aws ec2 start-instances --region "${REGION}" --instance-ids $instance_id
               aws ec2 wait instance-running --region "${REGION}" --instance-ids $instance_id
-
+              echo "this is line is 84"
               # Retrieve updated information after starting
             fi
           done
