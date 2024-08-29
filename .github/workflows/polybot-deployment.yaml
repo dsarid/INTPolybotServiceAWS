@@ -102,16 +102,15 @@ jobs:
           # instance_ids=${{ steps.validate_inst.outputs.instance_ids }}
           echo "this is line is 82"
           for instance_id in $instance_ids; do
-              echo "this is line is 83"
-              aws ec2 stop-instances --region "${REGION}" --instance-ids $instance_id
+            echo "this is line is 83"
+            aws ec2 stop-instances --region "${REGION}" --instance-ids $instance_id
 
-              # Wait until the instance is running
-              aws ec2 wait instance-stopped --region "${REGION}" --instance-ids $instance_id
+            # Wait until the instance is running
+            aws ec2 wait instance-stopped --region "${REGION}" --instance-ids $instance_id
 
-              aws ec2 start-instances --region "${REGION}" --instance-ids $instance_id
-              aws ec2 wait instance-running --region "${REGION}" --instance-ids $instance_id
-              echo "this is line is 84"
-              # Retrieve updated information after starting
-            fi
+            aws ec2 start-instances --region "${REGION}" --instance-ids $instance_id
+            aws ec2 wait instance-running --region "${REGION}" --instance-ids $instance_id
+            echo "this is line is 84"
+            # Retrieve updated information after starting
           done
 
