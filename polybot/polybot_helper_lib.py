@@ -44,7 +44,10 @@ def parse_info_to_text(obj_count_dict):
     text = ""
     for key, value in obj_count_dict.items():
         if value > 1:
-            text = text + f"there are {value} {key}s,\n"
+            if {key} == "person":
+                text = text + f"there are {value} people,\n"
+            else:
+                text = text + f"there are {value} {key}s,\n"
         else:
             text = text + f"there is 1 {key},\n"
 
